@@ -642,7 +642,7 @@
     <div class="pp-card">
       <div class="pp-label">Annual deficit per taxpayer</div>
       <div class="pp-value val-red" id="deficitPerTaxpayer">£3,900</div>
-      <div class="pp-desc">Your share of this year's borrowing</div>
+      <div class="pp-desc">Your share of this year's borrowing (annual rate)</div>
     </div>
     <div class="pp-card">
       <div class="pp-label">Spending per taxpayer (annual)</div>
@@ -854,7 +854,7 @@
 
     document.getElementById('debtPerPerson').textContent   = '£' + Math.round(debt / POPULATION).toLocaleString('en-GB');
     document.getElementById('debtPerTaxpayer').textContent = '£' + Math.round(debt / TAXPAYERS).toLocaleString('en-GB');
-    document.getElementById('deficitPerTaxpayer').textContent = '£' + Math.round((DEBT_PER_SEC * fysSecs) / TAXPAYERS).toLocaleString('en-GB');
+    document.getElementById('deficitPerTaxpayer').textContent = '£' + Math.round((DEBT_PER_SEC * SEC_IN_YEAR) / TAXPAYERS).toLocaleString('en-GB');
 
     document.getElementById('debtGDP').textContent = (debt / GDP_ANNUAL * 100).toFixed(1) + '%';
   }
