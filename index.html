@@ -117,9 +117,10 @@
 
   /* ── CHART ── */
   .chart-panel { background:var(--surface); border:1px solid var(--border); padding:16px 18px; margin-bottom:14px; }
-  .chart-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
-  .chart-title { font-family:'Oswald',sans-serif; font-size:0.68rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--dim); }
-  .chart-toggle { display:flex; gap:6px; }
+  .chart-header { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+  .chart-title { font-family:'Oswald',sans-serif; font-size:0.68rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--dim); margin-bottom:3px; }
+  .chart-subtitle { font-size:0.68rem; color:var(--subdim); font-family:'Rajdhani',sans-serif; }
+  .chart-toggle { display:flex; gap:6px; flex-shrink:0; }
   .chart-btn { background:var(--surface2); border:1px solid var(--border); color:var(--dim); padding:3px 10px; font-size:0.65rem; font-family:'Rajdhani',sans-serif; cursor:pointer; letter-spacing:0.06em; transition:all 0.2s; }
   .chart-btn.active { background:var(--red); border-color:var(--red); color:#fff; }
   .chart-btn:focus { outline:2px solid var(--blue); outline-offset:2px; }
@@ -173,18 +174,51 @@
   @media(max-width:480px){
     header{padding:10px 14px} main{padding:12px 10px 30px} .hero{padding:16px 14px 14px}
     .since-load{min-width:100%} .workday-bar{flex-direction:column;align-items:flex-start;gap:10px} .workday-divider{display:none}
+    .comparisons{grid-template-columns:1fr}
+    .chart-header{flex-direction:column;align-items:flex-start}
+    .chart-toggle{width:100%}
+    .chart-btn{flex:1;text-align:center}
+    .header-right{gap:6px}
+    .icon-btn{padding:4px 8px;font-size:0.68rem}
   }
+
+  /* ── PAUSED STATE ── */
+  body.paused .hero-value,
+  body.paused .since-load-value,
+  body.paused .card-value { opacity: 0.55; }
 
   /* ── ACCESSIBILITY: skip link ── */
   .skip-link { position:absolute; top:-40px; left:0; background:var(--red); color:#fff; padding:8px 16px; z-index:1000; font-family:'Rajdhani',sans-serif; text-decoration:none; }
   .skip-link:focus{top:0}
 
-  /* ── PAUSED STATE ── */
-  body.paused .hero-value,
-  body.paused .since-load-value,
-  body.paused .card-value { opacity:0.6; }
-  .paused-banner { display:none; background:var(--amber); color:#111; text-align:center; padding:4px; font-family:'Oswald',sans-serif; font-size:0.72rem; letter-spacing:0.12em; }
-  body.paused .paused-banner { display:block; }
+  /* ── KEY TAKEAWAY ── */
+  .takeaway-bar {
+    background: linear-gradient(135deg, rgba(230,57,70,0.08), rgba(77,157,224,0.06));
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--blue);
+    padding: 10px 18px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.82rem; color: var(--text);
+    font-family: 'Rajdhani', sans-serif; line-height: 1.4;
+  }
+  .takeaway-icon { color: var(--blue); font-size: 0.9rem; flex-shrink: 0; }
+  #takeawayText strong { color: var(--amber); }
+
+  /* ── PAUSED BANNER (high contrast both themes) ── */
+  .paused-banner {
+    display: none;
+    background: var(--amber);
+    color: #1a1200;
+    text-align: center;
+    padding: 5px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+  }
+  body.light .paused-banner { background: #d4900a; color: #fff; }
+  body.paused .paused-banner { display: block; }
 </style>
 </head>
 <body>
@@ -249,6 +283,12 @@
       <div class="speed-rate">£4,090 <span style="font-size:0.7rem;color:var(--dim)">per second</span></div>
     </div>
     <div class="bar-track"><div class="bar-fill" style="width:72%"></div></div>
+  </div>
+
+  <!-- KEY TAKEAWAY -->
+  <div class="takeaway-bar" aria-live="polite" aria-label="Key insight">
+    <span class="takeaway-icon">◈</span>
+    <span id="takeawayText">Loading key insight…</span>
   </div>
 
   <!-- WORKING DAY STATS -->
@@ -375,15 +415,28 @@
       <div class="comp-value" id="compDebtGDP">—</div>
       <div class="comp-desc">The national debt is equivalent to <strong id="compDebtGDPText">—</strong> of everything the UK economy produces in a year.</div>
     </div>
+    <div class="comp-card">
+      <div class="comp-label">Interest as % of Tax Receipts</div>
+      <div class="comp-value" id="compInterestTax">—</div>
+      <div class="comp-desc">Of every pound raised in tax, <strong id="compInterestTaxText">—</strong> goes straight to servicing the national debt before any public services are funded.</div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-label">Working-age adult vs Taxpayer debt share</div>
+      <div class="comp-value" id="compAdultTaxpayer">—</div>
+      <div class="comp-desc">Debt per working-age adult is <strong id="compAdultTaxpayerText">—</strong>, vs <strong id="compAdultTaxpayerTax">—</strong> per taxpayer — a difference of <strong id="compAdultTaxpayerDiff">—</strong>.</div>
+    </div>
   </div>
 
   <!-- HISTORICAL CHART -->
   <div class="chart-panel">
     <div class="chart-header">
-      <div class="chart-title">◈ UK Public Sector Net Debt as % of GDP</div>
+      <div>
+        <div class="chart-title">◈ UK Public Sector Net Debt as % of GDP</div>
+        <div class="chart-subtitle" id="chartSubtitle">Historical data — ONS. Click "+ OBR Projections to 2030" to extend the chart.</div>
+      </div>
       <div class="chart-toggle" role="group" aria-label="Chart view options">
-        <button class="chart-btn active" id="chartHistBtn" aria-pressed="true">Historical</button>
-        <button class="chart-btn" id="chartProjBtn" aria-pressed="false">+ OBR Projections</button>
+        <button class="chart-btn active" id="chartHistBtn" aria-pressed="true">Historical only</button>
+        <button class="chart-btn" id="chartProjBtn" aria-pressed="false">+ OBR Projections to 2030</button>
       </div>
     </div>
     <div class="chart-wrap">
@@ -393,8 +446,8 @@
       <span>2000</span><span>2005</span><span>2010</span><span>2015</span><span>2020</span><span>2025</span><span id="chartEndLabel">2025</span>
     </div>
     <div class="chart-legend" aria-hidden="true">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--ticker)"></div> Historical (ONS)</div>
-      <div class="legend-item" id="projLegend" style="display:none"><div class="legend-dot" style="background:var(--blue);opacity:0.6"></div> OBR Projection (to 2030)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--ticker)"></div> Historical (ONS PSND ex)</div>
+      <div class="legend-item" id="projLegend" style="display:none"><div class="legend-dot" style="background:var(--blue);opacity:0.8"></div> OBR Projection — <em>Economic &amp; Fiscal Outlook, March 2026</em></div>
     </div>
   </div>
 
@@ -647,7 +700,49 @@
     const debtGDPpct = (debt/GDP_ANNUAL*100).toFixed(1) + '%';
     document.getElementById('compDebtGDP').textContent = debtGDPpct;
     document.getElementById('compDebtGDPText').textContent = debtGDPpct;
+
+    // New comparisons
+    const intTaxPct = (INTEREST_ANNUAL/TAX_ANNUAL*100).toFixed(1) + '%';
+    document.getElementById('compInterestTax').textContent = intTaxPct;
+    document.getElementById('compInterestTaxText').textContent = intTaxPct;
+    const debtAdult = Math.round(debt/WORKING_AGE);
+    const debtTax   = Math.round(debt/TAXPAYERS);
+    const diff      = debtTax - debtAdult;
+    document.getElementById('compAdultTaxpayer').textContent = '£' + debtAdult.toLocaleString('en-GB') + ' vs £' + debtTax.toLocaleString('en-GB');
+    document.getElementById('compAdultTaxpayerText').textContent = '£' + debtAdult.toLocaleString('en-GB');
+    document.getElementById('compAdultTaxpayerTax').textContent  = '£' + debtTax.toLocaleString('en-GB');
+    document.getElementById('compAdultTaxpayerDiff').textContent = '£' + diff.toLocaleString('en-GB');
+
+    // Key takeaway — rotates through insights
+    updateTakeaway(debt);
   }
+
+  const TAKEAWAY_INTERVAL = 8000;
+  let takeawayIdx = 0;
+  function getTakeaways(debt) {
+    const intDefX   = (INTEREST_ANNUAL/DEFENCE_ANNUAL).toFixed(1);
+    const intTaxPct = (INTEREST_ANNUAL/TAX_ANNUAL*100).toFixed(1);
+    const debtGDP   = (debt/GDP_ANNUAL*100).toFixed(1);
+    const perSec    = '£4,090';
+    const perTax    = '£' + Math.round(debt/TAXPAYERS).toLocaleString('en-GB');
+    return [
+      `The UK debt is growing at <strong>${perSec} every second</strong> — that's £245,400 per minute, around the clock.`,
+      `Debt interest payments are <strong>${intDefX}× the size of the entire defence budget</strong> — more is spent on interest than on the armed forces.`,
+      `<strong>${intTaxPct}% of every pound raised in tax</strong> goes directly to servicing debt interest before a single public service is funded.`,
+      `The national debt now stands at <strong>${debtGDP}% of GDP</strong> — the highest since the early 1960s.`,
+      `Each taxpayer's notional share of the debt is <strong>${perTax}</strong> — and it rises by ~£4,090 per taxpayer every year the deficit continues.`,
+      `The annual deficit of ~£129bn is equivalent to <strong>66% of the entire NHS England budget</strong> — borrowed every single year.`,
+      `If the UK stopped borrowing today, the existing debt would still cost <strong>~£110bn per year in interest alone</strong>.`,
+    ];
+  }
+  function updateTakeaway(debt) {
+    const items = getTakeaways(debt);
+    document.getElementById('takeawayText').innerHTML = items[takeawayIdx % items.length];
+  }
+  setInterval(() => {
+    takeawayIdx++;
+    updateTakeaway(currentDebt());
+  }, TAKEAWAY_INTERVAL);
 
   // ─────────────────────────────────────────────────────────
   // TICKER
@@ -783,6 +878,7 @@
     document.getElementById('chartHistBtn').setAttribute('aria-pressed','true');
     document.getElementById('chartProjBtn').classList.remove('active');
     document.getElementById('chartProjBtn').setAttribute('aria-pressed','false');
+    document.getElementById('chartSubtitle').textContent = 'Historical data — ONS PSND ex. Click "+ OBR Projections to 2030" to extend the chart.';
     drawChart();
   });
   document.getElementById('chartProjBtn').addEventListener('click', () => {
@@ -791,6 +887,7 @@
     document.getElementById('chartProjBtn').setAttribute('aria-pressed','true');
     document.getElementById('chartHistBtn').classList.remove('active');
     document.getElementById('chartHistBtn').setAttribute('aria-pressed','false');
+    document.getElementById('chartSubtitle').textContent = 'Historical (ONS) + OBR projections to 2030 — Economic & Fiscal Outlook, March 2026.';
     drawChart();
   });
 
@@ -898,6 +995,7 @@
   updateClock();
   updateHero();
   updateCards();
+  updateTakeaway(currentDebt());
   setTimeout(drawChart, 150);
 
   setInterval(updateHero,  100);
