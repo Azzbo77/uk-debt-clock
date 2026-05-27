@@ -304,31 +304,33 @@
   /* Tooltip */
   .tooltip-icon {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 14px; height: 14px; border-radius: 50%;
-    background: var(--border); color: var(--dim);
-    font-size: 0.6rem; cursor: help;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--border); color: var(--bright);
+    font-size: 0.65rem; cursor: pointer;
     font-family: 'Rajdhani', sans-serif;
     flex-shrink: 0; font-style: normal;
+    transition: background 0.2s;
+    user-select: none;
   }
+  .tooltip-icon:hover { background: var(--dim); }
+  .tooltip-icon.active { background: var(--red); color: #fff; }
+
   .card { position: relative; }
   .tooltip-box {
     display: none;
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 0; right: 0;
-    background: #1e2230;
+    position: relative;
+    margin-top: 10px;
+    background: var(--surface2);
     border: 1px solid var(--border);
+    border-left: 2px solid var(--red);
     padding: 10px 12px;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     color: var(--text);
-    line-height: 1.5;
-    z-index: 200;
-    pointer-events: none;
+    line-height: 1.55;
+    z-index: 10;
     font-family: 'Rajdhani', sans-serif;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
   }
-  .tooltip-icon:hover + .tooltip-box,
-  .tooltip-icon:focus + .tooltip-box { display: block; }
+  .tooltip-box.visible { display: block; }
 
   /* ── PER PERSON / TAXPAYER ── */
   .pp-grid {
@@ -1122,6 +1124,35 @@
   setInterval(updateHero,  100);
   setInterval(updateCards, 1000);
   setInterval(updateClock, 1000);
+
+  // ─────────────────────────────────────────────────────────
+  // TOOLTIPS — click to toggle
+  // ─────────────────────────────────────────────────────────
+  document.querySelectorAll('.tooltip-icon').forEach(icon => {
+    icon.addEventListener('click', e => {
+      e.stopPropagation();
+      const box = icon.nextElementSibling;
+      const isOpen = box.classList.contains('visible');
+      // Close all others first
+      document.querySelectorAll('.tooltip-box.visible').forEach(b => b.classList.remove('visible'));
+      document.querySelectorAll('.tooltip-icon.active').forEach(i => i.classList.remove('active'));
+      if (!isOpen) {
+        box.classList.add('visible');
+        icon.classList.add('active');
+        icon.textContent = '✕';
+      } else {
+        icon.textContent = '?';
+      }
+    });
+  });
+  // Close tooltip when clicking elsewhere
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.tooltip-box.visible').forEach(b => b.classList.remove('visible'));
+    document.querySelectorAll('.tooltip-icon.active').forEach(i => {
+      i.classList.remove('active');
+      i.textContent = '?';
+    });
+  });
 
   window.addEventListener('resize', drawChart);
 </script>
