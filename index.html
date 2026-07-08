@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UK Debt Clock</title>
+<meta name="description" content="Live UK national debt clock — real-time estimates based on ONS and OBR data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Oswald:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #e63946; --amber: #f4c06a; --green: #3ec9b6; --blue: #4d9de0;
+    --bg: #0a0c10; --surface: #111318; --surface2: #181b22;
+    --border: #1e2230; --text: #c8cdd8; --dim: #8a92a8; --subdim: #7a8494;
+    --bright: #e8ecf5; --ticker: #ff5c67;
+  }
+  body.light {
+    --bg: #f0f2f7; --surface: #fff; --surface2: #e8eaf0; --border: #d0d4e0;
+    --text: #2a2f3d; --dim: #5a6070; --subdim: #7a8494; --bright: #111318; --ticker: #d42b38;
+  }
+
+  html, body { background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; min-height: 100vh; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
+  body::before { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px); pointer-events:none; z-index:999; }
+
+  /* ── HEADER ── */
+  header { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:100; gap:10px; flex-wrap:wrap; }
+  .logo { display:flex; align-items:center; gap:12px; }
+  .flag { width:46px; height:30px; flex-shrink:0; border:1px solid #333; display:inline-block; }
+  .logo-text { font-family:'Oswald',sans-serif; font-size:clamp(1rem,3vw,1.4rem); font-weight:700; letter-spacing:0.1em; color:var(--bright); text-transform:uppercase; }
+  .logo-text span { color:var(--red); }
+  .header-right { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .live-badge { display:flex; align-items:center; gap:6px; font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:var(--ticker); letter-spacing:0.12em; }
+  .live-dot { width:7px; height:7px; border-radius:50%; background:var(--ticker); animation:pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+  .clock-time { font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:var(--dim); letter-spacing:0.08em; }
+  .icon-btn { background:var(--surface2); border:1px solid var(--border); color:var(--dim); cursor:pointer; padding:5px 10px; font-size:0.72rem; font-family:'Rajdhani',sans-serif; letter-spacing:0.05em; transition:color 0.2s,border-color 0.2s; display:flex; align-items:center; gap:5px; }
+  .icon-btn:hover { color:var(--bright); border-color:var(--dim); }
+  .icon-btn:focus { outline:2px solid var(--blue); outline-offset:2px; }
+  .pause-btn.paused { border-color:var(--amber); color:var(--amber); }
+
+  /* ── TICKER ── */
+  .ticker-wrap { background:var(--surface2); border-bottom:1px solid var(--border); overflow:hidden; padding:6px 0; }
+  .ticker-inner { display:flex; animation:tickerScroll 60s linear infinite; white-space:nowrap; }
+  .ticker-inner:hover { animation-play-state:paused; }
+  @keyframes tickerScroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .ticker-item { display:inline-flex; align-items:center; gap:6px; padding:0 24px; font-family:'Share Tech Mono',monospace; font-size:0.72rem; color:var(--dim); border-right:1px solid var(--border); }
+  .t-up{color:var(--ticker)} .t-down{color:var(--green)} .t-neutral{color:var(--text)}
+
+  /* ── MAIN ── */
+  main { padding:16px 16px 40px; max-width:1200px; margin:0 auto; }
+
+  /* ── HERO ── */
+  .hero { background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--red); padding:24px 20px 18px; margin-bottom:14px; position:relative; overflow:hidden; }
+  .hero::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right,var(--red),transparent 70%); }
+  .hero-grid { display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start; }
+  @media(max-width:600px){ .hero-grid{grid-template-columns:1fr} }
+  .hero-label { font-family:'Oswald',sans-serif; font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--dim); margin-bottom:6px; }
+  .hero-value { font-family:'Share Tech Mono',monospace; font-size:clamp(1.8rem,5vw,3.8rem); color:var(--ticker); letter-spacing:-0.02em; line-height:1; text-shadow:0 0 40px rgba(230,57,70,0.25); }
+  .hero-sub { display:flex; gap:20px; margin-top:10px; flex-wrap:wrap; }
+  .hero-sub-item { font-size:0.8rem; color:var(--dim); }
+  .hero-sub-item strong { color:var(--amber); font-family:'Share Tech Mono',monospace; font-size:0.82rem; }
+
+  .since-load { background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--red); padding:12px 16px; min-width:200px; flex-shrink:0; }
+  .since-load-label { font-family:'Oswald',sans-serif; font-size:0.58rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--dim); margin-bottom:4px; }
+  .since-load-value { font-family:'Share Tech Mono',monospace; font-size:1.3rem; color:var(--ticker); }
+  .since-load-sub { font-size:0.68rem; color:var(--subdim); margin-top:3px; }
+
+  /* ── SPEED BAR ── */
+  .speed-bar { background:var(--surface); border:1px solid var(--border); padding:12px 18px; margin-bottom:14px; }
+  .speed-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; flex-wrap:wrap; gap:8px; }
+  .speed-title { font-family:'Oswald',sans-serif; font-size:0.68rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--dim); }
+  .speed-rate { font-family:'Share Tech Mono',monospace; font-size:1rem; color:var(--ticker); }
+  .bar-track { height:5px; background:var(--border); overflow:hidden; }
+  .bar-fill { height:100%; background:linear-gradient(to right,var(--red),var(--amber)); animation:barPulse 2s ease-in-out infinite; }
+  @keyframes barPulse{0%,100%{opacity:0.8}50%{opacity:1}}
+
+  /* ── SECTION TITLE ── */
+  .section-title { font-family:'Oswald',sans-serif; font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--dim); margin-bottom:10px; display:flex; align-items:center; gap:12px; }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ── CARDS ── */
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; margin-bottom:14px; }
+  .card { background:var(--surface); border:1px solid var(--border); padding:14px 16px; position:relative; overflow:visible; transition:border-color 0.2s; }
+  .card:hover { border-color:#2e3345; }
+  .card::after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:var(--accent,var(--border)); }
+  .card.accent-red{--accent:var(--red)} .card.accent-amber{--accent:var(--amber)} .card.accent-green{--accent:var(--green)} .card.accent-blue{--accent:var(--blue)}
+  .card-label { font-size:0.62rem; font-family:'Oswald',sans-serif; letter-spacing:0.15em; text-transform:uppercase; color:var(--dim); margin-bottom:5px; display:flex; align-items:center; gap:6px; }
+  .card-value { font-family:'Share Tech Mono',monospace; font-size:clamp(1rem,2.5vw,1.5rem); color:var(--bright); line-height:1.1; }
+  .card-value.val-red{color:var(--ticker)} .card-value.val-amber{color:var(--amber)} .card-value.val-green{color:var(--green)}
+  .card-sub { font-size:0.7rem; color:var(--subdim); margin-top:4px; }
+  .card-rate { display:inline-flex; align-items:center; gap:4px; font-size:0.62rem; font-family:'Share Tech Mono',monospace; margin-top:7px; padding:2px 6px; background:rgba(255,92,103,0.08); border:1px solid rgba(255,92,103,0.2); color:var(--ticker); }
+
+  /* ── TOOLTIP ── */
+  .tooltip-icon { display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:50%; background:var(--border); color:var(--bright); font-size:0.65rem; cursor:pointer; font-family:'Rajdhani',sans-serif; flex-shrink:0; font-style:normal; transition:background 0.2s; user-select:none; }
+  .tooltip-icon:hover{background:var(--dim)} .tooltip-icon.active{background:var(--red);color:#fff}
+  .tooltip-icon:focus{outline:2px solid var(--blue);outline-offset:2px}
+  .tooltip-box { display:none; margin-top:10px; background:var(--surface2); border:1px solid var(--border); border-left:2px solid var(--red); padding:10px 12px; font-size:0.75rem; color:var(--text); line-height:1.55; font-family:'Rajdhani',sans-serif; }
+  .tooltip-box.visible{display:block}
+
+  /* ── PP GRID ── */
+  .pp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; margin-bottom:14px; }
+  .pp-card { background:var(--surface2); border:1px solid var(--border); padding:13px 15px; display:flex; flex-direction:column; gap:3px; }
+  .pp-label { font-size:0.6rem; font-family:'Oswald',sans-serif; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim); }
+  .pp-value { font-family:'Share Tech Mono',monospace; font-size:1.2rem; color:var(--bright); }
+  .pp-value.val-red{color:var(--ticker)} .pp-value.val-amber{color:var(--amber)} .pp-value.val-green{color:var(--green)}
+  .pp-desc { font-size:0.68rem; color:var(--subdim); }
+
+  /* ── COMPARISONS ── */
+  .comparisons { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:10px; margin-bottom:14px; }
+  .comp-card { background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--blue); padding:14px 16px; }
+  .comp-label { font-family:'Oswald',sans-serif; font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim); margin-bottom:6px; }
+  .comp-value { font-family:'Share Tech Mono',monospace; font-size:1rem; color:var(--blue); margin-bottom:4px; }
+  .comp-desc { font-size:0.72rem; color:var(--text); line-height:1.4; }
+
+  /* ── CHART ── */
+  .chart-panel { background:var(--surface); border:1px solid var(--border); padding:16px 18px; margin-bottom:14px; }
+  .chart-header { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+  .chart-title { font-family:'Oswald',sans-serif; font-size:0.68rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--dim); margin-bottom:3px; }
+  .chart-subtitle { font-size:0.68rem; color:var(--subdim); font-family:'Rajdhani',sans-serif; }
+  .chart-toggle { display:flex; gap:6px; flex-shrink:0; }
+  .chart-btn { background:var(--surface2); border:1px solid var(--border); color:var(--dim); padding:3px 10px; font-size:0.65rem; font-family:'Rajdhani',sans-serif; cursor:pointer; letter-spacing:0.06em; transition:all 0.2s; }
+  .chart-btn.active { background:var(--red); border-color:var(--red); color:#fff; }
+  .chart-btn:focus { outline:2px solid var(--blue); outline-offset:2px; }
+  .chart-wrap { position:relative; height:160px; }
+  canvas#debtChart { width:100% !important; }
+  .chart-labels { display:flex; justify-content:space-between; font-family:'Share Tech Mono',monospace; font-size:0.6rem; color:var(--subdim); margin-top:4px; }
+  .chart-legend { display:flex; gap:16px; margin-top:8px; flex-wrap:wrap; }
+  .legend-item { display:flex; align-items:center; gap:5px; font-size:0.68rem; color:var(--dim); font-family:'Rajdhani',sans-serif; }
+  .legend-dot { width:10px; height:3px; border-radius:2px; }
+
+  /* ── WORKING DAY ── */
+  .workday-bar { background:var(--surface2); border:1px solid var(--border); padding:12px 18px; margin-bottom:14px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  .workday-item { display:flex; flex-direction:column; gap:2px; }
+  .workday-label { font-family:'Oswald',sans-serif; font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim); }
+  .workday-value { font-family:'Share Tech Mono',monospace; font-size:1.1rem; color:var(--ticker); }
+  .workday-divider { width:1px; height:36px; background:var(--border); }
+
+  /* ── FRESHNESS ── */
+  .freshness-panel { background:var(--surface); border:1px solid var(--border); padding:14px 18px; margin-top:14px; }
+  .freshness-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px; margin-bottom:12px; }
+  .freshness-item { display:flex; flex-direction:column; gap:3px; }
+  .freshness-label { font-family:'Oswald',sans-serif; font-size:0.58rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim); }
+  .freshness-value { font-family:'Share Tech Mono',monospace; font-size:0.72rem; color:var(--bright); display:flex; align-items:center; gap:6px; }
+  .freshness-sub { font-size:0.67rem; color:var(--subdim); }
+  .f-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+  .f-live{background:var(--green);animation:pulse 2s ease-in-out infinite} .f-ok{background:var(--green)} .f-warn{background:var(--amber)} .f-loading{background:var(--dim);animation:pulse 1s ease-in-out infinite}
+  .freshness-note { font-size:0.69rem; color:var(--subdim); border-top:1px solid var(--border); padding-top:10px; line-height:1.55; }
+  .freshness-note a { color:var(--blue); text-decoration:none; }
+  .freshness-note a:hover { text-decoration:underline; }
+
+  /* ── DISCLAIMER ── */
+  .disclaimer { background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--amber); padding:14px 18px; margin-top:14px; font-size:0.72rem; color:var(--text); line-height:1.6; }
+  .disclaimer strong { color:var(--amber); }
+  .disclaimer a { color:var(--blue); text-decoration:none; }
+  .disclaimer a:hover { text-decoration:underline; }
+
+  /* ── MODAL ── */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:500; align-items:center; justify-content:center; }
+  .modal-overlay.open{display:flex}
+  .modal { background:var(--surface); border:1px solid var(--border); padding:24px; max-width:480px; width:90%; position:relative; }
+  .modal-title { font-family:'Oswald',sans-serif; font-size:1rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--bright); margin-bottom:14px; }
+  .modal-text { background:var(--surface2); border:1px solid var(--border); padding:12px; font-family:'Share Tech Mono',monospace; font-size:0.78rem; color:var(--text); line-height:1.6; margin-bottom:14px; white-space:pre-wrap; }
+  .modal-btns{display:flex;gap:10px;flex-wrap:wrap}
+  .modal-btn { padding:8px 16px; border:1px solid var(--border); background:var(--surface2); color:var(--bright); font-family:'Rajdhani',sans-serif; font-size:0.85rem; cursor:pointer; letter-spacing:0.06em; transition:background 0.2s; }
+  .modal-btn:hover{background:var(--border)} .modal-btn.primary{background:var(--red);border-color:var(--red);color:#fff} .modal-btn.primary:hover{opacity:0.85}
+  .modal-btn:focus{outline:2px solid var(--blue);outline-offset:2px}
+  .modal-close { position:absolute; top:12px; right:14px; background:none; border:none; color:var(--dim); font-size:1.2rem; cursor:pointer; }
+  .modal-close:hover{color:var(--bright)}
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:480px){
+    header{padding:10px 14px} main{padding:12px 10px 30px} .hero{padding:16px 14px 14px}
+    .since-load{min-width:100%} .workday-bar{flex-direction:column;align-items:flex-start;gap:10px} .workday-divider{display:none}
+    .comparisons{grid-template-columns:1fr}
+    .chart-header{flex-direction:column;align-items:flex-start}
+    .chart-toggle{width:100%}
+    .chart-btn{flex:1;text-align:center}
+    .header-right{gap:6px}
+    .icon-btn{padding:4px 8px;font-size:0.68rem}
+  }
+
+  /* ── PAUSED STATE ── */
+  body.paused .hero-value,
+  body.paused .since-load-value,
+  body.paused .card-value { opacity: 0.55; }
+
+  /* ── ACCESSIBILITY: skip link ── */
+  .skip-link { position:absolute; top:-40px; left:0; background:var(--red); color:#fff; padding:8px 16px; z-index:1000; font-family:'Rajdhani',sans-serif; text-decoration:none; }
+  .skip-link:focus{top:0}
+
+  /* ── KEY TAKEAWAY ── */
+  .takeaway-bar {
+    background: linear-gradient(135deg, rgba(230,57,70,0.08), rgba(77,157,224,0.06));
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--blue);
+    padding: 10px 18px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.82rem; color: var(--text);
+    font-family: 'Rajdhani', sans-serif; line-height: 1.4;
+  }
+  .takeaway-icon { color: var(--blue); font-size: 0.9rem; flex-shrink: 0; }
+  #takeawayText strong { color: var(--amber); }
+
+  /* ── PAUSED BANNER (high contrast both themes) ── */
+  .paused-banner {
+    display: none;
+    background: var(--amber);
+    color: #1a1200;
+    text-align: center;
+    padding: 5px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+  }
+  body.light .paused-banner { background: #d4900a; color: #fff; }
+  body.paused .paused-banner { display: block; }
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div class="paused-banner" aria-live="polite">⏸ COUNTERS PAUSED — CLICK RESUME TO CONTINUE</div>
+
+<header role="banner">
+  <div class="logo">
+    <svg class="flag" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" role="img" aria-label="Union Jack">
+      <rect width="60" height="30" fill="#012169"/>
+      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+      <path d="M0,0 L60,30" stroke="#C8102E" stroke-width="4"/>
+      <path d="M60,0 L0,30" stroke="#C8102E" stroke-width="4"/>
+      <path d="M0,0 L20,10 M40,20 L60,30" stroke="#C8102E" stroke-width="4"/>
+      <path d="M60,0 L40,10 M20,20 L0,30" stroke="#C8102E" stroke-width="4"/>
+      <path d="M30,0 V30 M0,15 H60" stroke="#fff" stroke-width="10"/>
+      <path d="M30,0 V30 M0,15 H60" stroke="#C8102E" stroke-width="6"/>
+    </svg>
+    <div class="logo-text">UK <span>DEBT</span> CLOCK</div>
+  </div>
+  <div class="header-right">
+    <div class="clock-time" id="clockDisplay" aria-label="Current time">--:--:--</div>
+    <div class="live-badge" role="status" aria-live="polite"><div class="live-dot" aria-hidden="true"></div>LIVE</div>
+    <button class="icon-btn pause-btn" id="pauseBtn" aria-label="Pause counters">⏸ PAUSE</button>
+    <button class="icon-btn" id="themeBtn" aria-label="Toggle light/dark mode">☀ THEME</button>
+    <button class="icon-btn" id="shareBtn" aria-label="Share this page">⬆ SHARE</button>
+  </div>
+</header>
+
+<div class="ticker-wrap" aria-hidden="true"><div class="ticker-inner" id="ticker"></div></div>
+
+<main id="main-content">
+
+  <!-- HERO -->
+  <section aria-labelledby="heroLabel">
+  <div class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-label" id="heroLabel">◈ UK National Debt — Public Sector Net Debt (PSND ex)</div>
+        <div class="hero-value" id="heroDebt" aria-live="off" aria-label="Current national debt">£0</div>
+        <div class="hero-sub">
+          <div class="hero-sub-item">Debt/GDP: <strong id="debtGDP">—</strong></div>
+          <div class="hero-sub-item">Rising at: <strong>£4,090/sec</strong></div>
+          <div class="hero-sub-item">Annual deficit: <strong>~£129bn</strong></div>
+          <div class="hero-sub-item">Per household: <strong>~£102,000</strong></div>
+        </div>
+      </div>
+      <div class="since-load" aria-label="Debt added since page load">
+        <div class="since-load-label">Added since you opened this page</div>
+        <div class="since-load-value" id="sinceLoad">£0</div>
+        <div class="since-load-sub" id="sinceLoadTime">0 seconds</div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <!-- SPEED BAR -->
+  <div class="speed-bar" aria-hidden="true">
+    <div class="speed-header">
+      <div class="speed-title">◈ Debt accumulation rate</div>
+      <div class="speed-rate">£4,090 <span style="font-size:0.7rem;color:var(--dim)">per second</span></div>
+    </div>
+    <div class="bar-track"><div class="bar-fill" style="width:72%"></div></div>
+  </div>
+
+  <!-- KEY TAKEAWAY -->
+  <div class="takeaway-bar" aria-live="polite" aria-label="Key insight">
+    <span class="takeaway-icon">◈</span>
+    <span id="takeawayText">Loading key insight…</span>
+  </div>
+
+  <!-- WORKING DAY STATS -->
+  <div class="workday-bar" aria-label="Debt added per working period">
+    <div class="workday-item"><div class="workday-label">Per working hour</div><div class="workday-value">£14,724,000</div></div>
+    <div class="workday-divider" aria-hidden="true"></div>
+    <div class="workday-item"><div class="workday-label">Per working day (8 hrs)</div><div class="workday-value">£117,792,000</div></div>
+    <div class="workday-divider" aria-hidden="true"></div>
+    <div class="workday-item"><div class="workday-label">Per working week</div><div class="workday-value">£588,960,000</div></div>
+    <div class="workday-divider" aria-hidden="true"></div>
+    <div class="workday-item"><div class="workday-label">Per working month</div><div class="workday-value">£10,750,000,000</div></div>
+  </div>
+
+  <!-- GOVERNMENT FINANCES -->
+  <div class="section-title">Government Finances — 2026-27 Year to Date</div>
+  <div class="grid" role="list">
+
+    <div class="card accent-red" role="listitem">
+      <div class="card-label">Annual Deficit
+        <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is the annual deficit?">?</span>
+        <div class="tooltip-box" role="tooltip">The deficit is the gap between what the government spends and what it raises in taxes each year. Every year's deficit adds to the total national debt. Note: this clock extrapolates the deficit at a steady rate — actual daily borrowing varies throughout the year.</div>
+      </div>
+      <div class="card-value val-red" id="deficitCard">£0</div>
+      <div class="card-sub">Borrowing so far this fiscal year</div>
+      <div class="card-rate">▲ £4,090/sec</div>
+    </div>
+
+    <div class="card accent-red" role="listitem">
+      <div class="card-label">Total Govt Spending
+        <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is total government spending?">?</span>
+        <div class="tooltip-box" role="tooltip">Total managed expenditure — everything the government spends including departments, welfare, pensions and debt interest. Planned at £1,368bn for 2025-26.</div>
+      </div>
+      <div class="card-value val-red" id="spendingCard">£0</div>
+      <div class="card-sub">£1,368bn planned for 2025-26</div>
+      <div class="card-rate">▲ £43,359/sec</div>
+    </div>
+
+    <div class="card accent-green" role="listitem">
+      <div class="card-label">Tax Receipts
+        <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What are tax receipts?">?</span>
+        <div class="tooltip-box" role="tooltip">Total tax and other income received by the government. Includes income tax, National Insurance, VAT, and corporation tax. Expected to reach £1,235bn in 2025-26.</div>
+      </div>
+      <div class="card-value val-green" id="taxCard">£0</div>
+      <div class="card-sub">£1,235bn expected for 2025-26</div>
+    </div>
+
+    <div class="card accent-red" role="listitem">
+      <div class="card-label">Debt Interest
+        <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What are debt interest payments?">?</span>
+        <div class="tooltip-box" role="tooltip">The cost of servicing the national debt — interest paid to gilts holders. At ~£110bn, it is the third-largest item of public expenditure. For context, this is more than the entire UK defence budget.</div>
+      </div>
+      <div class="card-value val-red" id="interestCard">£0</div>
+      <div class="card-sub">~£110bn annually — 3rd largest spend</div>
+      <div class="card-rate">▲ £3,488/sec</div>
+    </div>
+
+    <div class="card accent-amber" role="listitem">
+      <div class="card-label">Welfare &amp; Social Protection
+        <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is welfare spending?">?</span>
+        <div class="tooltip-box" role="tooltip">Cash transfers including Universal Credit, housing benefit, tax credits and disability benefits. The single largest component of annually managed expenditure at £333bn. The State Pension makes up ~£125bn of this total.</div>
+      </div>
+      <div class="card-value val-amber" id="welfareCard">£0</div>
+      <div class="card-sub">£333bn annually — largest AME item</div>
+    </div>
+
+    <div class="card accent-amber" role="listitem">
+      <div class="card-label">State Pension
+        <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is the state pension?">?</span>
+        <div class="tooltip-box" role="tooltip">The State Pension alone costs ~£125bn per year — the single largest benefit payment. The triple lock guarantees it rises by the highest of inflation, earnings growth, or 2.5% annually.</div>
+      </div>
+      <div class="card-value val-amber" id="pensionCard">£0</div>
+      <div class="card-sub">~£125bn annually — largest single benefit</div>
+    </div>
+
+    <div class="card accent-amber" role="listitem">
+      <div class="card-label">NHS England
+        <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is the NHS budget?">?</span>
+        <div class="tooltip-box" role="tooltip">The NHS England budget covers hospital services, GP practices, mental health and community care. Funded entirely by general taxation — the UK's largest public service by spend.</div>
+      </div>
+      <div class="card-value val-amber" id="nhsCard">£0</div>
+      <div class="card-sub">~£196bn in 2025-26</div>
+    </div>
+
+    <div class="card accent-red" role="listitem">
+      <div class="card-label">Defence
+        <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is the defence budget?">?</span>
+        <div class="tooltip-box" role="tooltip">UK defence spending covers the armed forces, equipment, and NATO commitments at ~2% of GDP (~£62bn). For comparison, debt interest payments alone cost nearly twice as much.</div>
+      </div>
+      <div class="card-value val-red" id="defenceCard">£0</div>
+      <div class="card-sub">~£62bn annually — ~2% of GDP</div>
+    </div>
+
+    <div class="card accent-amber" role="listitem">
+      <div class="card-label">Education
+        <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is the education budget?">?</span>
+        <div class="tooltip-box" role="tooltip">Total education spending covering schools, further and higher education in England plus block grants to devolved nations. Around £112bn per year.</div>
+      </div>
+      <div class="card-value val-amber" id="educationCard">£0</div>
+      <div class="card-sub">~£112bn annually</div>
+    </div>
+
+  </div>
+
+  <!-- COMPARISONS -->
+  <div class="section-title">Comparisons</div>
+  <div class="comparisons">
+    <div class="comp-card">
+      <div class="comp-label">Debt interest vs Defence</div>
+      <div class="comp-value" id="compInterestDefence">—</div>
+      <div class="comp-desc">Debt interest payments cost <strong id="compInterestDefenceText">—</strong> times more than the entire UK defence budget.</div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-label">Deficit as % of NHS budget</div>
+      <div class="comp-value" id="compDeficitNHS">—</div>
+      <div class="comp-desc">This year's deficit is equivalent to <strong id="compDeficitNHSText">—</strong> of the entire NHS England budget.</div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-label">Interest vs Education</div>
+      <div class="comp-value" id="compInterestEd">—</div>
+      <div class="comp-desc">Debt interest payments cost <strong id="compInterestEdText">—</strong> times more than the entire education budget.</div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-label">Debt vs Annual GDP</div>
+      <div class="comp-value" id="compDebtGDP">—</div>
+      <div class="comp-desc">The national debt is equivalent to <strong id="compDebtGDPText">—</strong> of everything the UK economy produces in a year.</div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-label">Interest as % of Tax Receipts</div>
+      <div class="comp-value" id="compInterestTax">—</div>
+      <div class="comp-desc">Of every pound raised in tax, <strong id="compInterestTaxText">—</strong> goes straight to servicing the national debt before any public services are funded.</div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-label">Working-age adult vs Taxpayer debt share</div>
+      <div class="comp-value" id="compAdultTaxpayer">—</div>
+      <div class="comp-desc">Debt per working-age adult is <strong id="compAdultTaxpayerText">—</strong>, vs <strong id="compAdultTaxpayerTax">—</strong> per taxpayer — a difference of <strong id="compAdultTaxpayerDiff">—</strong>.</div>
+    </div>
+  </div>
+
+  <!-- HISTORICAL CHART -->
+  <div class="chart-panel">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">◈ UK Public Sector Net Debt as % of GDP</div>
+        <div class="chart-subtitle" id="chartSubtitle">Historical data — ONS. Click "+ OBR Projections to 2030" to extend the chart.</div>
+      </div>
+      <div class="chart-toggle" role="group" aria-label="Chart view options">
+        <button class="chart-btn active" id="chartHistBtn" aria-pressed="true">Historical only</button>
+        <button class="chart-btn" id="chartProjBtn" aria-pressed="false">+ OBR Projections to 2030</button>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="debtChart" role="img" aria-label="Chart showing UK public sector net debt as percentage of GDP from 2000 to present with optional OBR projections to 2030"></canvas>
+    </div>
+    <div class="chart-labels" aria-hidden="true">
+      <span>2000</span><span>2005</span><span>2010</span><span>2015</span><span>2020</span><span>2025</span><span id="chartEndLabel">2025</span>
+    </div>
+    <div class="chart-legend" aria-hidden="true">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--ticker)"></div> Historical (ONS PSND ex)</div>
+      <div class="legend-item" id="projLegend" style="display:none"><div class="legend-dot" style="background:var(--blue);opacity:0.8"></div> OBR Projection — <em>Economic &amp; Fiscal Outlook, March 2026</em></div>
+    </div>
+  </div>
+
+  <!-- PER CITIZEN -->
+  <div class="section-title">Per Citizen</div>
+  <div class="pp-grid">
+    <div class="pp-card"><div class="pp-label">Debt per person</div><div class="pp-value val-red" id="debtPerPerson">—</div><div class="pp-desc">Based on 67.6m UK population</div></div>
+    <div class="pp-card"><div class="pp-label">Debt per working-age adult</div><div class="pp-value val-red" id="debtPerAdult">—</div><div class="pp-desc">~41m adults aged 16–64 (ONS)</div></div>
+    <div class="pp-card"><div class="pp-label">Spending per person (annual)</div><div class="pp-value val-red">£20,237</div><div class="pp-desc">£1,368bn ÷ 67.6m people</div></div>
+    <div class="pp-card"><div class="pp-label">Tax per person (annual)</div><div class="pp-value val-green">£18,268</div><div class="pp-desc">£1,235bn ÷ 67.6m people</div></div>
+    <div class="pp-card"><div class="pp-label">Interest per person (annual)</div><div class="pp-value val-amber">£1,627</div><div class="pp-desc">~£110bn ÷ 67.6m people</div></div>
+  </div>
+
+  <!-- PER TAXPAYER -->
+  <div class="section-title">Per Taxpayer</div>
+  <div class="pp-grid">
+    <div class="pp-card"><div class="pp-label">Debt per taxpayer</div><div class="pp-value val-red" id="debtPerTaxpayer">—</div><div class="pp-desc">~34m UK taxpayers (HMRC 2024/25)</div></div>
+    <div class="pp-card"><div class="pp-label">Annual deficit per taxpayer</div><div class="pp-value val-red" id="deficitPerTaxpayer">—</div><div class="pp-desc">Your share of this year's borrowing (annual rate)</div></div>
+    <div class="pp-card"><div class="pp-label">Spending per taxpayer (annual)</div><div class="pp-value val-amber">£40,235</div><div class="pp-desc">£1,368bn ÷ 34m taxpayers</div></div>
+    <div class="pp-card"><div class="pp-label">Interest per taxpayer (annual)</div><div class="pp-value val-amber">£3,235</div><div class="pp-desc">~£110bn ÷ 34m taxpayers</div></div>
+  </div>
+
+  <!-- ECONOMY -->
+  <div class="section-title">Economy</div>
+  <div class="grid">
+    <div class="card accent-green">
+      <div class="card-label">UK GDP (YTD)
+        <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is GDP?">?</span>
+        <div class="tooltip-box" role="tooltip">Gross Domestic Product — the total value of all goods and services produced in the UK. Growing at ~1.3% in 2025 according to ONS estimates. The debt/GDP ratio shows how borrowing compares to the size of the economy.</div>
+      </div>
+      <div class="card-value val-green" id="gdpCard">£0</div>
+      <div class="card-sub">~£3.1 trillion annually; +1.3% in 2025</div>
+    </div>
+    <div class="card accent-green">
+      <div class="card-label">GDP per Second
+        <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is GDP per second?">?</span>
+        <div class="tooltip-box" role="tooltip">How much economic value the UK generates every second (~£98,000). Compare this to the debt growth rate of £4,090/sec — for every £1 borrowed, the economy generates about £24.</div>
+      </div>
+      <div class="card-value val-green" id="gdpSecCard">£0</div>
+      <div class="card-sub">vs debt growth of £4,090/sec</div>
+    </div>
+    <div class="card accent-amber">
+      <div class="card-label">UK Population</div>
+      <div class="card-value val-amber">67,600,000</div>
+      <div class="card-sub">ONS mid-2024 estimate</div>
+    </div>
+    <div class="card accent-blue">
+      <div class="card-label">UK Taxpayers
+        <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="How many UK taxpayers are there?">?</span>
+        <div class="tooltip-box" role="tooltip">The number of individuals paying income tax in the UK. Smaller than total population as it excludes children, retirees below the personal allowance, and those earning under the tax threshold.</div>
+      </div>
+      <div class="card-value" style="color:var(--blue)">34,000,000</div>
+      <div class="card-sub">HMRC 2024/25 estimate</div>
+    </div>
+  </div>
+
+  <!-- FRESHNESS PANEL -->
+  <div class="freshness-panel">
+    <div class="freshness-row">
+      <div class="freshness-item">
+        <div class="freshness-label">Debt base figure</div>
+        <div class="freshness-value" id="onsStatus"><span class="f-dot f-loading"></span> Fetching from ONS…</div>
+        <div class="freshness-sub" id="onsDate">—</div>
+      </div>
+      <div class="freshness-item">
+        <div class="freshness-label">Last ONS refresh</div>
+        <div class="freshness-value" id="lastRefresh"><span class="f-dot f-loading"></span> —</div>
+        <div class="freshness-sub">Auto-refreshes every hour</div>
+      </div>
+      <div class="freshness-item">
+        <div class="freshness-label">Deficit rate</div>
+        <div class="freshness-value"><a href="https://obr.uk/efo/economic-and-fiscal-outlook-march-2026/" target="_blank" rel="noopener" style="color:var(--bright)">OBR Fiscal Outlook, Mar 2026 ↗</a></div>
+        <div class="freshness-sub">Next update: Autumn Budget 2026</div>
+      </div>
+      <div class="freshness-item">
+        <div class="freshness-label">Spending &amp; receipts</div>
+        <div class="freshness-value"><a href="https://obr.uk/forecasts-in-depth/brief-guides-and-explainers/public-finances/" target="_blank" rel="noopener" style="color:var(--bright)">OBR Public Finances Guide ↗</a></div>
+        <div class="freshness-sub">Next update: Autumn Budget 2026</div>
+      </div>
+      <div class="freshness-item">
+        <div class="freshness-label">Counter motion</div>
+        <div class="freshness-value"><span class="f-dot f-live"></span> Live in browser</div>
+        <div class="freshness-sub">Extrapolated at £4,090/sec</div>
+      </div>
+    </div>
+    <div class="freshness-note">
+      The debt counter ticks live using published <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk" target="_blank" rel="noopener">ONS PSND data (series BKQK)</a> fetched on page load and refreshed every hour. Annual forecasts are updated here 2–3 times per year in line with major OBR publications. The counter extrapolates at a steady rate; actual daily borrowing varies. All figures are indicative and for illustrative purposes only.
+    </div>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer" role="note" aria-label="Important disclaimer">
+    <strong>Important:</strong> This clock is an illustrative tool based on published ONS and OBR data. The national debt is a liability of the public sector — it is <strong>not a personal debt owed by individual citizens</strong>. "Debt per person" and "debt per taxpayer" figures are mathematical divisions used to give scale, not legal obligations. Governments do not typically aim to fully repay national debt; they manage it as a share of GDP over time. Data is subject to revision. For authoritative figures, consult the <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance" target="_blank" rel="noopener">ONS Public Sector Finances</a> and <a href="https://obr.uk" target="_blank" rel="noopener">Office for Budget Responsibility</a>.
+  </div>
+
+</main>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="shareModal" role="dialog" aria-modal="true" aria-labelledby="shareModalTitle">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Close share dialog">✕</button>
+    <div class="modal-title" id="shareModalTitle">Share the UK Debt Clock</div>
+    <div class="modal-text" id="shareText">Loading…</div>
+    <div class="modal-btns">
+      <button class="modal-btn primary" id="shareX">Post to X</button>
+      <button class="modal-btn" id="copyText">Copy text</button>
+      <button class="modal-btn" id="copyLink">Copy link</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─────────────────────────────────────────────────────────
+  // CONSTANTS
+  // ─────────────────────────────────────────────────────────
+  const FISCAL_YEAR_START  = new Date('2026-04-06T00:00:00Z');
+  const FALLBACK_DEBT      = 2922e9;
+  const DEBT_PER_SEC       = 4090;
+  const SPENDING_ANNUAL    = 1368e9;
+  const TAX_ANNUAL         = 1235e9;
+  const INTEREST_ANNUAL    = 110e9;
+  const WELFARE_ANNUAL     = 333e9;
+  const PENSION_ANNUAL     = 125e9;
+  const NHS_ANNUAL         = 196e9;
+  const DEFENCE_ANNUAL     = 62e9;
+  const EDUCATION_ANNUAL   = 112e9;
+  const GDP_ANNUAL         = 3100e9;
+  const SEC_IN_YEAR        = 365.25 * 24 * 3600;
+  const POPULATION         = 67600000;
+  const WORKING_AGE        = 41000000;
+  const TAXPAYERS          = 34000000;
+  const PAGE_LOAD_TIME     = Date.now();
+
+  let DEBT_BASE    = FALLBACK_DEBT;
+  let DEBT_BASE_AT = FISCAL_YEAR_START.getTime();
+  let isPaused     = false;
+  let showProj     = false;
+
+  // ─────────────────────────────────────────────────────────
+  // ONS API
+  // ─────────────────────────────────────────────────────────
+  async function fetchONSDebt() {
+    const statusEl  = document.getElementById('onsStatus');
+    const dateEl    = document.getElementById('onsDate');
+    const refreshEl = document.getElementById('lastRefresh');
+    try {
+      const res = await fetch('https://api.beta.ons.gov.uk/v1/data?uri=/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk/pusf');
+      if (!res.ok) throw new Error('ONS API returned ' + res.status);
+      const data   = await res.json();
+      const months = data.months;
+      if (!months || months.length === 0) throw new Error('No monthly data');
+      const sorted   = [...months].sort((a,b) => new Date(b.year+' '+b.month) - new Date(a.year+' '+a.month));
+      const latest   = sorted[0];
+      const valueM   = parseFloat(latest.value);
+      if (isNaN(valueM)) throw new Error('Invalid value');
+      const valueGBP = valueM * 1e6;
+      const baseDate = new Date(latest.year + ' ' + latest.month);
+      baseDate.setMonth(baseDate.getMonth() + 1); baseDate.setDate(0);
+      DEBT_BASE    = valueGBP;
+      DEBT_BASE_AT = baseDate.getTime();
+      const ageDays = Math.floor((Date.now() - baseDate.getTime()) / 86400000);
+      const ageText = ageDays < 35 ? ageDays + ' days ago' : Math.floor(ageDays/30) + ' months ago';
+      statusEl.innerHTML = `<span class="f-dot ${ageDays<40?'f-ok':'f-warn'}"></span> ONS live — £${(valueGBP/1e9).toFixed(0)}bn`;
+      dateEl.textContent = `Latest: ${latest.month} ${latest.year} (${ageText})`;
+      refreshEl.innerHTML = `<span class="f-dot f-ok"></span> ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
+    } catch(err) {
+      console.warn('ONS API fetch failed, using fallback:', err.message);
+      statusEl.innerHTML = `<span class="f-dot f-warn"></span> Fallback data`;
+      dateEl.textContent  = 'Base: Apr 2026 — House of Commons Library';
+      refreshEl.innerHTML = `<span class="f-dot f-warn"></span> Unavailable`;
+    }
+  }
+  fetchONSDebt();
+  setInterval(fetchONSDebt, 3600000);
+
+  // ─────────────────────────────────────────────────────────
+  // HELPERS
+  // ─────────────────────────────────────────────────────────
+  function currentDebt() { return DEBT_BASE + ((Date.now() - DEBT_BASE_AT) / 1000) * DEBT_PER_SEC; }
+  function secsSinceFYStart() { return Math.max(0, (Date.now() - FISCAL_YEAR_START.getTime()) / 1000); }
+  function fmtFull(v) { return '£' + Math.round(v).toLocaleString('en-GB'); }
+  function fmtBn(v) {
+    if (v >= 1e12) return '£' + (v/1e12).toFixed(3) + 'tn';
+    if (v >= 1e9)  return '£' + (v/1e9).toFixed(2) + 'bn';
+    return '£' + Math.round(v).toLocaleString('en-GB');
+  }
+  function fmtSecs(s) {
+    if (s < 60) return Math.floor(s) + ' seconds';
+    if (s < 3600) return Math.floor(s/60) + ' minutes';
+    if (s < 86400) return Math.floor(s/3600) + ' hours';
+    return Math.floor(s/86400) + ' days';
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // CLOCK
+  // ─────────────────────────────────────────────────────────
+  function updateClock() {
+    document.getElementById('clockDisplay').textContent =
+      new Date().toLocaleTimeString('en-GB', {hour12:false});
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // HERO + SINCE LOAD
+  // ─────────────────────────────────────────────────────────
+  function updateHero() {
+    if (isPaused) return;
+    const debt = currentDebt();
+    document.getElementById('heroDebt').textContent = fmtFull(debt);
+    const secsSince = (Date.now() - PAGE_LOAD_TIME) / 1000;
+    document.getElementById('sinceLoad').textContent = fmtFull(secsSince * DEBT_PER_SEC);
+    document.getElementById('sinceLoadTime').textContent = fmtSecs(secsSince);
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // CARDS
+  // ─────────────────────────────────────────────────────────
+  function updateCards() {
+    if (isPaused) return;
+    const secs = secsSinceFYStart();
+    const frac = Math.min(secs / SEC_IN_YEAR, 1);
+    const debt = currentDebt();
+
+    document.getElementById('deficitCard').textContent    = fmtFull(DEBT_PER_SEC * secs);
+    document.getElementById('spendingCard').textContent   = fmtBn(SPENDING_ANNUAL * frac);
+    document.getElementById('taxCard').textContent        = fmtBn(TAX_ANNUAL * frac);
+    document.getElementById('interestCard').textContent   = fmtBn(INTEREST_ANNUAL * frac);
+    document.getElementById('welfareCard').textContent    = fmtBn(WELFARE_ANNUAL * frac);
+    document.getElementById('pensionCard').textContent    = fmtBn(PENSION_ANNUAL * frac);
+    document.getElementById('nhsCard').textContent        = fmtBn(NHS_ANNUAL * frac);
+    document.getElementById('defenceCard').textContent    = fmtBn(DEFENCE_ANNUAL * frac);
+    document.getElementById('educationCard').textContent  = fmtBn(EDUCATION_ANNUAL * frac);
+    document.getElementById('gdpCard').textContent        = fmtBn(GDP_ANNUAL * frac);
+    document.getElementById('gdpSecCard').textContent     = '£' + Math.round(GDP_ANNUAL/SEC_IN_YEAR).toLocaleString('en-GB');
+    document.getElementById('debtPerPerson').textContent  = '£' + Math.round(debt/POPULATION).toLocaleString('en-GB');
+    document.getElementById('debtPerAdult').textContent   = '£' + Math.round(debt/WORKING_AGE).toLocaleString('en-GB');
+    document.getElementById('debtPerTaxpayer').textContent= '£' + Math.round(debt/TAXPAYERS).toLocaleString('en-GB');
+    document.getElementById('deficitPerTaxpayer').textContent = '£' + Math.round((DEBT_PER_SEC*SEC_IN_YEAR)/TAXPAYERS).toLocaleString('en-GB');
+    document.getElementById('debtGDP').textContent = (debt/GDP_ANNUAL*100).toFixed(1) + '%';
+
+    // Comparisons
+    const intDefRatio = (INTEREST_ANNUAL/DEFENCE_ANNUAL).toFixed(1);
+    document.getElementById('compInterestDefence').textContent = intDefRatio + '×';
+    document.getElementById('compInterestDefenceText').textContent = intDefRatio + 'x';
+    const defNHSpct = ((DEBT_PER_SEC*SEC_IN_YEAR)/NHS_ANNUAL*100).toFixed(0) + '%';
+    document.getElementById('compDeficitNHS').textContent = defNHSpct;
+    document.getElementById('compDeficitNHSText').textContent = defNHSpct;
+    const intEdRatio = (INTEREST_ANNUAL/EDUCATION_ANNUAL).toFixed(1);
+    document.getElementById('compInterestEd').textContent = intEdRatio + '×';
+    document.getElementById('compInterestEdText').textContent = intEdRatio + 'x';
+    const debtGDPpct = (debt/GDP_ANNUAL*100).toFixed(1) + '%';
+    document.getElementById('compDebtGDP').textContent = debtGDPpct;
+    document.getElementById('compDebtGDPText').textContent = debtGDPpct;
+
+    // New comparisons
+    const intTaxPct = (INTEREST_ANNUAL/TAX_ANNUAL*100).toFixed(1) + '%';
+    document.getElementById('compInterestTax').textContent = intTaxPct;
+    document.getElementById('compInterestTaxText').textContent = intTaxPct;
+    const debtAdult = Math.round(debt/WORKING_AGE);
+    const debtTax   = Math.round(debt/TAXPAYERS);
+    const diff      = debtTax - debtAdult;
+    document.getElementById('compAdultTaxpayer').textContent = '£' + debtAdult.toLocaleString('en-GB') + ' vs £' + debtTax.toLocaleString('en-GB');
+    document.getElementById('compAdultTaxpayerText').textContent = '£' + debtAdult.toLocaleString('en-GB');
+    document.getElementById('compAdultTaxpayerTax').textContent  = '£' + debtTax.toLocaleString('en-GB');
+    document.getElementById('compAdultTaxpayerDiff').textContent = '£' + diff.toLocaleString('en-GB');
+
+    // Key takeaway — rotates through insights
+    updateTakeaway(debt);
+  }
+
+  const TAKEAWAY_INTERVAL = 8000;
+  let takeawayIdx = 0;
+  function getTakeaways(debt) {
+    const intDefX   = (INTEREST_ANNUAL/DEFENCE_ANNUAL).toFixed(1);
+    const intTaxPct = (INTEREST_ANNUAL/TAX_ANNUAL*100).toFixed(1);
+    const debtGDP   = (debt/GDP_ANNUAL*100).toFixed(1);
+    const perSec    = '£4,090';
+    const perTax    = '£' + Math.round(debt/TAXPAYERS).toLocaleString('en-GB');
+    return [
+      `The UK debt is growing at <strong>${perSec} every second</strong> — that's £245,400 per minute, around the clock.`,
+      `Debt interest payments are <strong>${intDefX}× the size of the entire defence budget</strong> — more is spent on interest than on the armed forces.`,
+      `<strong>${intTaxPct}% of every pound raised in tax</strong> goes directly to servicing debt interest before a single public service is funded.`,
+      `The national debt now stands at <strong>${debtGDP}% of GDP</strong> — the highest since the early 1960s.`,
+      `Each taxpayer's notional share of the debt is <strong>${perTax}</strong> — and it rises by ~£4,090 per taxpayer every year the deficit continues.`,
+      `The annual deficit of ~£129bn is equivalent to <strong>66% of the entire NHS England budget</strong> — borrowed every single year.`,
+      `If the UK stopped borrowing today, the existing debt would still cost <strong>~£110bn per year in interest alone</strong>.`,
+    ];
+  }
+  function updateTakeaway(debt) {
+    const items = getTakeaways(debt);
+    document.getElementById('takeawayText').innerHTML = items[takeawayIdx % items.length];
+  }
+  setInterval(() => {
+    takeawayIdx++;
+    updateTakeaway(currentDebt());
+  }, TAKEAWAY_INTERVAL);
+
+  // ─────────────────────────────────────────────────────────
+  // TICKER
+  // ─────────────────────────────────────────────────────────
+  function buildTicker() {
+    const debt = currentDebt();
+    const items = [
+      {label:'NATIONAL DEBT', val:'£'+(debt/1e9).toFixed(0)+'bn', cls:'up'},
+      {label:'DEBT/GDP', val:(debt/GDP_ANNUAL*100).toFixed(1)+'%', cls:'up'},
+      {label:'ANNUAL DEFICIT', val:'£129bn', cls:'up'},
+      {label:'DEBT GROWTH', val:'£4,090/sec', cls:'up'},
+      {label:'GDP GROWTH 2025', val:'+1.3%', cls:'down'},
+      {label:'DEBT INTEREST', val:'£110bn/yr', cls:'up'},
+      {label:'WELFARE SPEND', val:'£333bn/yr', cls:'up'},
+      {label:'STATE PENSION', val:'£125bn/yr', cls:'up'},
+      {label:'NHS BUDGET', val:'£196bn/yr', cls:'up'},
+      {label:'DEFENCE', val:'£62bn/yr', cls:'up'},
+      {label:'EDUCATION', val:'£112bn/yr', cls:'up'},
+      {label:'TAX RECEIPTS', val:'£1,235bn/yr', cls:'neutral'},
+      {label:'TOTAL SPENDING', val:'£1,368bn/yr', cls:'up'},
+      {label:'UK GDP', val:'~£3.1tn', cls:'neutral'},
+      {label:'DEBT PER PERSON', val:'£'+Math.round(debt/POPULATION).toLocaleString('en-GB'), cls:'up'},
+      {label:'DEBT PER TAXPAYER', val:'£'+Math.round(debt/TAXPAYERS).toLocaleString('en-GB'), cls:'up'},
+      {label:'GILTS (% OF DEBT)', val:'~85%', cls:'neutral'},
+      {label:'FISCAL HEADROOM', val:'£22bn', cls:'neutral'},
+    ];
+    const el = document.getElementById('ticker');
+    el.innerHTML = [...items,...items].map(d =>
+      `<span class="ticker-item"><span style="color:var(--dim)">${d.label}</span> <span class="${d.cls==='up'?'t-up':d.cls==='down'?'t-down':'t-neutral'}">${d.val}</span></span>`
+    ).join('');
+  }
+  buildTicker();
+  setInterval(buildTicker, 30000);
+
+  // ─────────────────────────────────────────────────────────
+  // CHART — historical + OBR projections toggle
+  // ─────────────────────────────────────────────────────────
+  // Historical ONS PSND ex % GDP approx annual (2000–2025)
+  const HIST_DATA = [
+    29,30,31,32,33,34,35,37,43,52,
+    62,70,75,79,82,83,84,84,84,83,
+    97,95,96,95,94,94
+  ];
+  // OBR projections 2026–2030 (approx, from March 2026 EFO)
+  const PROJ_DATA = [95,96,97,97,98];
+
+  function drawChart() {
+    const canvas = document.getElementById('debtChart');
+    if (!canvas) return;
+    const ctx  = canvas.getContext('2d');
+    const wrap = canvas.parentElement;
+    canvas.width  = wrap.offsetWidth;
+    canvas.height = 160;
+
+    const allData   = showProj ? [...HIST_DATA, ...PROJ_DATA] : HIST_DATA;
+    const histLen   = HIST_DATA.length;
+    const totalLen  = allData.length;
+    const W = canvas.width, H = canvas.height;
+    const pad = {top:14, right:20, bottom:20, left:42};
+    const chartW = W - pad.left - pad.right;
+    const chartH = H - pad.top  - pad.bottom;
+    const minV=0, maxV=115;
+    const isDark = !document.body.classList.contains('light');
+    const gridCol  = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
+    const textCol  = isDark ? '#7a8494' : '#888';
+
+    ctx.clearRect(0,0,W,H);
+
+    // Grid
+    [0,25,50,75,100].forEach(v => {
+      const y = pad.top + chartH - ((v-minV)/(maxV-minV))*chartH;
+      ctx.beginPath(); ctx.strokeStyle=gridCol; ctx.lineWidth=1;
+      ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+      ctx.fillStyle=textCol; ctx.font='10px Share Tech Mono,monospace';
+      ctx.textAlign='right'; ctx.fillText(v+'%', pad.left-4, y+3);
+    });
+
+    const xStep = chartW / (totalLen - 1);
+    const toPoint = (v,i) => ({
+      x: pad.left + i * xStep,
+      y: pad.top + chartH - ((v-minV)/(maxV-minV))*chartH
+    });
+
+    const histPoints = HIST_DATA.map(toPoint);
+    const projPoints = showProj ? PROJ_DATA.map((v,i) => toPoint(v, histLen - 1 + i)) : [];
+
+    // Historical fill
+    const grad = ctx.createLinearGradient(0,pad.top,0,pad.top+chartH);
+    grad.addColorStop(0, isDark?'rgba(255,92,103,0.3)':'rgba(255,92,103,0.15)');
+    grad.addColorStop(1,'rgba(255,92,103,0)');
+    ctx.beginPath();
+    ctx.moveTo(histPoints[0].x, pad.top+chartH);
+    histPoints.forEach(p=>ctx.lineTo(p.x,p.y));
+    ctx.lineTo(histPoints[histPoints.length-1].x, pad.top+chartH);
+    ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+
+    // Historical line
+    ctx.beginPath(); ctx.strokeStyle='#ff5c67'; ctx.lineWidth=2;
+    histPoints.forEach((p,i) => i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+    ctx.stroke();
+
+    // Projection line (dashed blue)
+    if (showProj && projPoints.length > 0) {
+      ctx.beginPath();
+      ctx.strokeStyle = isDark ? 'rgba(77,157,224,0.8)' : 'rgba(50,120,200,0.8)';
+      ctx.lineWidth=2; ctx.setLineDash([5,4]);
+      ctx.moveTo(histPoints[histPoints.length-1].x, histPoints[histPoints.length-1].y);
+      projPoints.forEach(p => ctx.lineTo(p.x,p.y));
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    // Event markers
+    [{idx:8,label:'2008 Crisis'},{idx:20,label:'COVID-19'}].forEach(e => {
+      const p = histPoints[e.idx];
+      ctx.beginPath();
+      ctx.strokeStyle = isDark?'rgba(244,192,106,0.4)':'rgba(200,140,0,0.3)';
+      ctx.lineWidth=1; ctx.setLineDash([3,3]);
+      ctx.moveTo(p.x,pad.top); ctx.lineTo(p.x,pad.top+chartH);
+      ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = isDark?'#f4c06a':'#b8860b';
+      ctx.font='9px Rajdhani,sans-serif'; ctx.textAlign='center';
+      ctx.fillText(e.label, p.x, pad.top+9);
+    });
+
+    // Update end label
+    document.getElementById('chartEndLabel').textContent = showProj ? '2030' : '2025';
+    document.getElementById('projLegend').style.display = showProj ? 'flex' : 'none';
+  }
+
+  document.getElementById('chartHistBtn').addEventListener('click', () => {
+    showProj = false;
+    document.getElementById('chartHistBtn').classList.add('active');
+    document.getElementById('chartHistBtn').setAttribute('aria-pressed','true');
+    document.getElementById('chartProjBtn').classList.remove('active');
+    document.getElementById('chartProjBtn').setAttribute('aria-pressed','false');
+    document.getElementById('chartSubtitle').textContent = 'Historical data — ONS PSND ex. Click "+ OBR Projections to 2030" to extend the chart.';
+    drawChart();
+  });
+  document.getElementById('chartProjBtn').addEventListener('click', () => {
+    showProj = true;
+    document.getElementById('chartProjBtn').classList.add('active');
+    document.getElementById('chartProjBtn').setAttribute('aria-pressed','true');
+    document.getElementById('chartHistBtn').classList.remove('active');
+    document.getElementById('chartHistBtn').setAttribute('aria-pressed','false');
+    document.getElementById('chartSubtitle').textContent = 'Historical (ONS) + OBR projections to 2030 — Economic & Fiscal Outlook, March 2026.';
+    drawChart();
+  });
+
+  // ─────────────────────────────────────────────────────────
+  // PAUSE
+  // ─────────────────────────────────────────────────────────
+  document.getElementById('pauseBtn').addEventListener('click', () => {
+    isPaused = !isPaused;
+    document.body.classList.toggle('paused', isPaused);
+    const btn = document.getElementById('pauseBtn');
+    btn.textContent = isPaused ? '▶ RESUME' : '⏸ PAUSE';
+    btn.classList.toggle('paused', isPaused);
+    btn.setAttribute('aria-label', isPaused ? 'Resume counters' : 'Pause counters');
+  });
+
+  // ─────────────────────────────────────────────────────────
+  // THEME
+  // ─────────────────────────────────────────────────────────
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    document.body.classList.toggle('light');
+    document.getElementById('themeBtn').textContent =
+      document.body.classList.contains('light') ? '☽ THEME' : '☀ THEME';
+    drawChart();
+  });
+
+  // ─────────────────────────────────────────────────────────
+  // SHARE
+  // ─────────────────────────────────────────────────────────
+  function getShareText() {
+    const debt = currentDebt();
+    const sinceLoad = ((Date.now()-PAGE_LOAD_TIME)/1000*DEBT_PER_SEC);
+    return `🇬🇧 The UK national debt is currently £${(debt/1e12).toFixed(3)} trillion — £${Math.round(debt/TAXPAYERS).toLocaleString('en-GB')} per taxpayer, rising at £4,090 every second.\n\nIn the time I spent on this page, £${Math.round(sinceLoad).toLocaleString('en-GB')} was added to the debt.\n\nTrack it live 👉 https://debt.azzbo77.com`;
+  }
+  document.getElementById('shareBtn').addEventListener('click', () => {
+    document.getElementById('shareText').textContent = getShareText();
+    document.getElementById('shareModal').classList.add('open');
+    document.getElementById('modalClose').focus();
+  });
+  document.getElementById('modalClose').addEventListener('click', () => {
+    document.getElementById('shareModal').classList.remove('open');
+    document.getElementById('shareBtn').focus();
+  });
+  document.getElementById('shareModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('shareModal')) {
+      document.getElementById('shareModal').classList.remove('open');
+    }
+  });
+  document.getElementById('shareX').addEventListener('click', () => {
+    window.open('https://x.com/intent/tweet?text=' + encodeURIComponent(getShareText()), '_blank');
+  });
+  document.getElementById('copyText').addEventListener('click', () => {
+    navigator.clipboard.writeText(getShareText()).then(() => {
+      document.getElementById('copyText').textContent = '✓ Copied!';
+      setTimeout(()=>document.getElementById('copyText').textContent='Copy text',2000);
+    });
+  });
+  document.getElementById('copyLink').addEventListener('click', () => {
+    navigator.clipboard.writeText('https://debt.azzbo77.com').then(() => {
+      document.getElementById('copyLink').textContent = '✓ Copied!';
+      setTimeout(()=>document.getElementById('copyLink').textContent='Copy link',2000);
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────
+  // TOOLTIPS
+  // ─────────────────────────────────────────────────────────
+  document.querySelectorAll('.tooltip-icon').forEach(icon => {
+    icon.addEventListener('click', e => {
+      e.stopPropagation();
+      const box    = icon.nextElementSibling;
+      const isOpen = box.classList.contains('visible');
+      document.querySelectorAll('.tooltip-box.visible').forEach(b=>b.classList.remove('visible'));
+      document.querySelectorAll('.tooltip-icon.active').forEach(i=>{i.classList.remove('active');i.textContent='?';i.setAttribute('aria-expanded','false');});
+      if (!isOpen) {
+        box.classList.add('visible');
+        icon.classList.add('active');
+        icon.textContent = '✕';
+        icon.setAttribute('aria-expanded','true');
+      }
+    });
+    icon.addEventListener('keydown', e => {
+      if (e.key==='Enter'||e.key===' ') { e.preventDefault(); icon.click(); }
+      if (e.key==='Escape') {
+        const box = icon.nextElementSibling;
+        box.classList.remove('visible');
+        icon.classList.remove('active');
+        icon.textContent='?';
+        icon.setAttribute('aria-expanded','false');
+      }
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.tooltip-box.visible').forEach(b=>b.classList.remove('visible'));
+    document.querySelectorAll('.tooltip-icon.active').forEach(i=>{i.classList.remove('active');i.textContent='?';i.setAttribute('aria-expanded','false');});
+  });
+
+  // Escape closes modal
+  document.addEventListener('keydown', e => {
+    if (e.key==='Escape') document.getElementById('shareModal').classList.remove('open');
+  });
+
+  // ─────────────────────────────────────────────────────────
+  // INIT
+  // ─────────────────────────────────────────────────────────
+  updateClock();
+  updateHero();
+  updateCards();
+  updateTakeaway(currentDebt());
+  setTimeout(drawChart, 150);
+
+  setInterval(updateHero,  100);
+  setInterval(updateCards, 1000);
+  setInterval(updateClock, 1000);
+  window.addEventListener('resize', drawChart);
+</script>
+</body>
+</html>
