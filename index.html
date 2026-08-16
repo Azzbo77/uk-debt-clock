@@ -62,6 +62,9 @@
   .hero-sub { display:flex; gap:20px; margin-top:10px; flex-wrap:wrap; }
   .hero-sub-item { font-size:0.8rem; color:var(--dim); }
   .hero-sub-item strong { color:var(--amber); font-family:'Share Tech Mono',monospace; font-size:0.82rem; }
+  .hero-base { font-size:0.68rem; color:var(--subdim); margin-top:8px; font-family:'Rajdhani',sans-serif; }
+  .hero-base a { color:var(--blue); text-decoration:none; }
+  .hero-base a:hover { text-decoration:underline; }
 
   .since-load { background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--red); padding:12px 16px; min-width:200px; flex-shrink:0; }
   .since-load-label { font-family:'Oswald',sans-serif; font-size:0.58rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--dim); margin-bottom:4px; }
@@ -163,6 +166,16 @@
   .disclaimer strong { color:var(--amber); }
   .disclaimer a { color:var(--blue); text-decoration:none; }
   .disclaimer a:hover { text-decoration:underline; }
+
+  /* ── FOOTER / SOURCE ── */
+  .source-bar {
+    display:flex; flex-wrap:wrap; gap:12px 20px; align-items:center; justify-content:space-between;
+    margin-top:18px; padding:12px 0 4px; border-top:1px solid var(--border);
+    font-size:0.68rem; color:var(--subdim); font-family:'Rajdhani',sans-serif;
+  }
+  .source-bar a { color:var(--blue); text-decoration:none; }
+  .source-bar a:hover { text-decoration:underline; }
+  .source-links { display:flex; flex-wrap:wrap; gap:14px; }
 
   /* ── MODAL ── */
   .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:500; align-items:center; justify-content:center; }
@@ -267,6 +280,7 @@
       <div>
         <div class="hero-label" id="heroLabel">◈ UK National Debt — Public Sector Net Debt (PSND ex)</div>
         <div class="hero-value" id="heroDebt" aria-live="off" aria-label="Current national debt">£0</div>
+        <div class="hero-base" id="heroBase">Base: loading… · extrapolated live</div>
         <div class="hero-sub">
           <div class="hero-sub-item">Debt/GDP: <strong id="debtGDP">—</strong></div>
           <div class="hero-sub-item">Rising at: <strong>£4,090/sec</strong></div>
@@ -576,13 +590,26 @@
       </div>
     </div>
     <div class="freshness-note">
-      The debt counter ticks live using published <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk" target="_blank" rel="noopener">ONS PSND data (series BKQK)</a> fetched on page load and refreshed every hour. Latest published figure (end-June 2026) was approximately £2,990bn (94.9% of GDP). Annual forecasts are updated here 2–3 times per year in line with major OBR publications. The counter extrapolates at a steady rate; actual daily borrowing varies. All figures are indicative and for illustrative purposes only.
+      The debt counter ticks live using published <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk" target="_blank" rel="noopener">ONS PSND data (series BKQK)</a> fetched on page load and refreshed every hour. The constant £4,090/sec rate is an average derived from the latest full-year deficit projection (not a claim about daily cash borrowing, which fluctuates). Annual totals are updated 2–3 times per year in line with major OBR publications. Last successful ONS figure is cached locally so the page still works if the API is temporarily unavailable. All figures are indicative and for illustrative purposes only.
     </div>
   </div>
 
   <!-- DISCLAIMER -->
   <div class="disclaimer" role="note" aria-label="Important disclaimer">
-    <strong>Important:</strong> This clock is an illustrative tool based on published ONS and OBR data. The national debt is a liability of the public sector — it is <strong>not a personal debt owed by individual citizens</strong>. "Debt per person" and "debt per taxpayer" figures are mathematical divisions used to give scale, not legal obligations. Governments do not typically aim to fully repay national debt; they manage it as a share of GDP over time. Data is subject to revision. For authoritative figures, consult the <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance" target="_blank" rel="noopener">ONS Public Sector Finances</a> and <a href="https://obr.uk" target="_blank" rel="noopener">Office for Budget Responsibility</a>.
+    <strong>Important:</strong> This clock is an illustrative tool based on published ONS and OBR data. The national debt is a liability of the public sector — it is <strong>not a personal debt owed by individual citizens</strong>. "Debt per person" and "debt per taxpayer" figures are mathematical divisions used to give scale, not legal obligations. Governments do not typically aim to fully repay national debt; they manage it as a share of GDP over time. Data is subject to revision.
+    <br><br>
+    <strong>PSND vs PSNFL:</strong> This page tracks Public Sector Net Debt excluding public sector banks (PSND ex) — the traditional headline measure. The government currently targets a broader balance-sheet measure, Public Sector Net Financial Liabilities (PSNFL), which is lower because it includes additional financial assets. Both are published by the ONS.
+    <br><br>
+    For authoritative figures, consult the <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance" target="_blank" rel="noopener">ONS Public Sector Finances</a> and <a href="https://obr.uk" target="_blank" rel="noopener">Office for Budget Responsibility</a>.
+  </div>
+
+  <div class="source-bar">
+    <div class="source-links">
+      <a href="https://github.com/Azzbo77/uk-debt-clock" target="_blank" rel="noopener">GitHub source ↗</a>
+      <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance" target="_blank" rel="noopener">ONS data ↗</a>
+      <a href="https://obr.uk" target="_blank" rel="noopener">OBR ↗</a>
+    </div>
+    <div>Open-source · No tracking · Single-file</div>
   </div>
 
 </main>
@@ -627,10 +654,29 @@
   let DEBT_BASE_AT = FISCAL_YEAR_START.getTime();
   let isPaused     = false;
   let showProj     = false;
+  let baseLabel    = 'Base: ~£2,990bn (end-June 2026 ONS)';
+
+  // Restore last good debt figure if available
+  try {
+    const saved = localStorage.getItem('ukDebtBase');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.value > 2000e9 && parsed.at) {
+        DEBT_BASE = parsed.value;
+        DEBT_BASE_AT = parsed.at;
+        baseLabel = parsed.label || baseLabel;
+      }
+    }
+  } catch(e) {}
 
   // ─────────────────────────────────────────────────────────
   // ONS API
   // ─────────────────────────────────────────────────────────
+  function updateHeroBase() {
+    const el = document.getElementById('heroBase');
+    if (el) el.textContent = baseLabel + ' · extrapolated live at £4,090/sec';
+  }
+
   async function fetchONSDebt() {
     const statusEl  = document.getElementById('onsStatus');
     const dateEl    = document.getElementById('onsDate');
@@ -652,14 +698,24 @@
       DEBT_BASE_AT = baseDate.getTime();
       const ageDays = Math.floor((Date.now() - baseDate.getTime()) / 86400000);
       const ageText = ageDays < 35 ? ageDays + ' days ago' : Math.floor(ageDays/30) + ' months ago';
+      baseLabel = `Base: ${latest.month} ${latest.year} ONS (£${(valueGBP/1e9).toFixed(0)}bn)`;
+      try {
+        localStorage.setItem('ukDebtBase', JSON.stringify({
+          value: valueGBP,
+          at: baseDate.getTime(),
+          label: baseLabel
+        }));
+      } catch(e) {}
       statusEl.innerHTML = `<span class="f-dot ${ageDays<40?'f-ok':'f-warn'}"></span> ONS live — £${(valueGBP/1e9).toFixed(0)}bn`;
       dateEl.textContent = `Latest: ${latest.month} ${latest.year} (${ageText})`;
       refreshEl.innerHTML = `<span class="f-dot f-ok"></span> ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
+      updateHeroBase();
     } catch(err) {
       console.warn('ONS API fetch failed, using fallback:', err.message);
-      statusEl.innerHTML = `<span class="f-dot f-warn"></span> Fallback data`;
-      dateEl.textContent  = 'Base: ~£2,990bn (end-June 2026 ONS)';
+      statusEl.innerHTML = `<span class="f-dot f-warn"></span> Fallback / cached data`;
+      dateEl.textContent  = baseLabel;
       refreshEl.innerHTML = `<span class="f-dot f-warn"></span> Unavailable`;
+      updateHeroBase();
     }
   }
   fetchONSDebt();
@@ -948,13 +1004,31 @@
   });
 
   // ─────────────────────────────────────────────────────────
-  // THEME
+  // THEME (persist + respect system preference on first visit)
   // ─────────────────────────────────────────────────────────
-  document.getElementById('themeBtn').addEventListener('click', () => {
-    document.body.classList.toggle('light');
-    document.getElementById('themeBtn').textContent =
-      document.body.classList.contains('light') ? '☽ THEME' : '☀ THEME';
+  function applyTheme(isLight) {
+    document.body.classList.toggle('light', isLight);
+    document.getElementById('themeBtn').textContent = isLight ? '☽ THEME' : '☀ THEME';
+    try { localStorage.setItem('ukDebtTheme', isLight ? 'light' : 'dark'); } catch(e) {}
     drawChart();
+  }
+
+  // Initial theme: saved preference > system preference > dark
+  (function initTheme() {
+    let preferLight = false;
+    try {
+      const saved = localStorage.getItem('ukDebtTheme');
+      if (saved === 'light' || saved === 'dark') {
+        preferLight = saved === 'light';
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        preferLight = true;
+      }
+    } catch(e) {}
+    applyTheme(preferLight);
+  })();
+
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    applyTheme(!document.body.classList.contains('light'));
   });
 
   // ─────────────────────────────────────────────────────────
@@ -1038,6 +1112,7 @@
   // ─────────────────────────────────────────────────────────
   updateClock();
   updateHero();
+  updateHeroBase();
   updateCards();
   updateTakeaway(currentDebt());
   setTimeout(drawChart, 150);
