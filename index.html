@@ -115,6 +115,13 @@
   .comp-value { font-family:'Share Tech Mono',monospace; font-size:1rem; color:var(--blue); margin-bottom:4px; }
   .comp-desc { font-size:0.72rem; color:var(--text); line-height:1.4; }
 
+  /* ── CONTEXT CARDS (new) ── */
+  .context-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px; margin-bottom:14px; }
+  .context-card { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--amber); padding:14px 16px; }
+  .context-label { font-family:'Oswald',sans-serif; font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim); margin-bottom:6px; }
+  .context-value { font-family:'Share Tech Mono',monospace; font-size:1.05rem; color:var(--amber); margin-bottom:6px; }
+  .context-desc { font-size:0.74rem; color:var(--text); line-height:1.45; }
+
   /* ── CHART ── */
   .chart-panel { background:var(--surface); border:1px solid var(--border); padding:16px 18px; margin-bottom:14px; }
   .chart-header { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
@@ -427,6 +434,41 @@
     </div>
   </div>
 
+  <!-- NEW: REAL-WORLD CONTEXT -->
+  <div class="section-title">Real-world context — Inflation, wages &amp; opportunity cost</div>
+  <div class="context-grid">
+    <div class="context-card">
+      <div class="context-label">Debt interest opportunity cost</div>
+      <div class="context-value">~£110bn / year</div>
+      <div class="context-desc">Interest is the third-largest public spending item. It exceeds the entire defence budget and is roughly half the NHS England budget. Every pound spent on interest cannot fund services, tax cuts or investment.</div>
+    </div>
+    <div class="context-card">
+      <div class="context-label">Real regular pay growth</div>
+      <div class="context-value">~0.3% (recent)</div>
+      <div class="context-desc">ONS data for early–mid 2026 shows real regular pay (CPIH-adjusted) growing at only around 0.3%. Nominal wage growth has slowed while the debt interest bill remains large, limiting fiscal room for tax relief or higher public-sector pay.</div>
+    </div>
+    <div class="context-card">
+      <div class="context-label">House prices (nominal)</div>
+      <div class="context-value">Low single-digit growth</div>
+      <div class="context-desc">Average UK house prices have risen only modestly in 2025–26 (around 1–2.5% annually depending on the index). After the high inflation of 2021–23, real house prices remain below earlier peaks in many areas, especially London and the South East.</div>
+    </div>
+    <div class="context-card">
+      <div class="context-label">What £4,090 per second means</div>
+      <div class="context-value">£245,400 / minute</div>
+      <div class="context-desc">At the current extrapolated rate the debt rises by roughly £14.7 million every working hour. Over a typical 8-hour working day that is nearly £118 million added — money that future taxpayers will service through interest.</div>
+    </div>
+    <div class="context-card">
+      <div class="context-label">Interest vs taxpayer</div>
+      <div class="context-value">~£3,235 each</div>
+      <div class="context-desc">Dividing the annual interest bill by ~34 million taxpayers gives roughly £3,200+ per taxpayer per year that goes to debt servicing before any public service is paid for.</div>
+    </div>
+    <div class="context-card">
+      <div class="context-label">Long-term pressure</div>
+      <div class="context-value">OBR warning</div>
+      <div class="context-desc">The OBR’s July 2026 Fiscal risks report shows that without further action, demographic pressures (health, pensions) plus rising net interest could put debt on an unsustainable upward path from the 2030s/2040s.</div>
+    </div>
+  </div>
+
   <!-- HISTORICAL CHART -->
   <div class="chart-panel">
     <div class="chart-header">
@@ -534,7 +576,7 @@
       </div>
     </div>
     <div class="freshness-note">
-      The debt counter ticks live using published <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk" target="_blank" rel="noopener">ONS PSND data (series BKQK)</a> fetched on page load and refreshed every hour. Annual forecasts are updated here 2–3 times per year in line with major OBR publications. The counter extrapolates at a steady rate; actual daily borrowing varies. All figures are indicative and for illustrative purposes only.
+      The debt counter ticks live using published <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk" target="_blank" rel="noopener">ONS PSND data (series BKQK)</a> fetched on page load and refreshed every hour. Latest published figure (end-June 2026) was approximately £2,990bn (94.9% of GDP). Annual forecasts are updated here 2–3 times per year in line with major OBR publications. The counter extrapolates at a steady rate; actual daily borrowing varies. All figures are indicative and for illustrative purposes only.
     </div>
   </div>
 
@@ -561,10 +603,10 @@
 
 <script>
   // ─────────────────────────────────────────────────────────
-  // CONSTANTS
+  // CONSTANTS  (updated Aug 2026)
   // ─────────────────────────────────────────────────────────
   const FISCAL_YEAR_START  = new Date('2026-04-06T00:00:00Z');
-  const FALLBACK_DEBT      = 2922e9;
+  const FALLBACK_DEBT      = 2989.9e9;   // ~ end-June 2026 ONS figure
   const DEBT_PER_SEC       = 4090;
   const SPENDING_ANNUAL    = 1368e9;
   const TAX_ANNUAL         = 1235e9;
@@ -616,7 +658,7 @@
     } catch(err) {
       console.warn('ONS API fetch failed, using fallback:', err.message);
       statusEl.innerHTML = `<span class="f-dot f-warn"></span> Fallback data`;
-      dateEl.textContent  = 'Base: Apr 2026 — House of Commons Library';
+      dateEl.textContent  = 'Base: ~£2,990bn (end-June 2026 ONS)';
       refreshEl.innerHTML = `<span class="f-dot f-warn"></span> Unavailable`;
     }
   }
@@ -729,10 +771,12 @@
       `The UK debt is growing at <strong>${perSec} every second</strong> — that's £245,400 per minute, around the clock.`,
       `Debt interest payments are <strong>${intDefX}× the size of the entire defence budget</strong> — more is spent on interest than on the armed forces.`,
       `<strong>${intTaxPct}% of every pound raised in tax</strong> goes directly to servicing debt interest before a single public service is funded.`,
-      `The national debt now stands at <strong>${debtGDP}% of GDP</strong> — the highest since the early 1960s.`,
+      `The national debt now stands at <strong>${debtGDP}% of GDP</strong> — levels last seen in the early 1960s.`,
       `Each taxpayer's notional share of the debt is <strong>${perTax}</strong> — and it rises by ~£4,090 per taxpayer every year the deficit continues.`,
       `The annual deficit of ~£129bn is equivalent to <strong>66% of the entire NHS England budget</strong> — borrowed every single year.`,
       `If the UK stopped borrowing today, the existing debt would still cost <strong>~£110bn per year in interest alone</strong>.`,
+      `Real regular pay growth has recently been only ~0.3% after inflation — while the debt interest bill remains one of the largest items of public spending.`,
+      `Average UK house prices have risen only modestly in nominal terms in 2025–26; after earlier high inflation, real house prices are still below previous peaks in many regions.`,
     ];
   }
   function updateTakeaway(debt) {
