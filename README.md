@@ -9,24 +9,25 @@ No server required. No frameworks. Just a single HTML file.
  
 ## What It Shows
  
-The clock pulls from published figures by the Office for National Statistics (ONS), the Office for Budget Responsibility (OBR), and the House of Commons Library, and extrapolates them in real time based on known rates of change.
+The clock uses published figures from the Office for National Statistics (ONS), the Office for Budget Responsibility (OBR), NHS England, and the House of Commons Library. It shows live estimates, not real-time government accounts.
  
 ### National Debt
-The headline figure shows the UK's public sector net debt, currently around **£2.9 trillion**, rising at approximately **£4,090 every second** — derived from the 2025-26 annual deficit of ~£129 billion. The base figure is fetched automatically from the ONS API on each page load, so it self-corrects to the latest monthly bulletin without any manual update needed.
+The headline figure uses the latest ONS public sector net debt observation available from the API. As of 28 October 2026, the latest observation was **£3,005.0 billion at the end of September 2026**. The fallback is that same observation. The separate **£3,662 per second** rate annualizes the OBR March 2026 forecast of £115.5 billion borrowing for 2026-27; actual borrowing is uneven and should be checked against monthly ONS outturns.
  
 ### Government Finances
-Year-to-date running totals (from the start of the UK fiscal year, 6th April) for:
-- Annual deficit
-- Total government spending (~£1,368bn planned for 2025-26)
-- Tax receipts (~£1,235bn expected for 2025-26)
-- Debt interest payments (~£110bn — the third largest item of public expenditure)
-- Welfare and social protection spending (~£333bn)
-- NHS England budget (~£196bn)
+Pro-rated estimates against 2026-27 annual forecasts (the UK public-sector financial year starts 1 April) for:
+- Annual borrowing forecast
+- Total managed expenditure (~£1,421bn, OBR March 2026 forecast)
+- Current receipts (~£1,304bn, OBR March 2026 forecast)
+- Net debt interest (~£111bn, OBR March 2026 forecast)
+- Welfare spending (£352.8bn, OBR March 2026 forecast)
+- Pensioner spending (£169.2bn, OBR March 2026 forecast)
+- NHS England Group and NHS providers revenue limit (£215.352bn, 2026-27 financial directions)
 ### Per Citizen & Per Taxpayer
-Breakdowns of the debt and annual borrowing on a per-person and per-taxpayer basis, based on ONS population figures and HMRC taxpayer data (~34 million taxpayers in 2024/25).
+Breakdowns of debt and annual borrowing per person and per taxpayer. The population base is ONS mid-2025 and the taxpayer divisor is HMRC's 2026-27 projection of 40.8 million income taxpayers; per-taxpayer figures are illustrative.
  
 ### Economy
-Running GDP estimate for the fiscal year, plus GDP per second, based on a nominal UK GDP of approximately £3.1 trillion.
+Running GDP estimate for the fiscal year, plus nominal GDP per second, based on the OBR March 2026 2026-27 forecast of £3.164 trillion.
  
 ---
  
@@ -38,7 +39,7 @@ Figures are colour coded to give an at-a-glance sense of their nature:
 |--------|---------|
 | 🔴 Red | Negative for the public finances — debt, deficit, interest payments, overspending |
 | 🟡 Amber | Significant but neutral — welfare, NHS, population figures |
-| 🟢 Green | Positive — tax receipts, GDP and economic output |
+| 🟢 Green | Positive — government receipts and economic output |
  
 ---
  
@@ -46,12 +47,13 @@ Figures are colour coded to give an at-a-glance sense of their nature:
  
 | What | How fresh |
 |------|-----------|
-| Debt base figure | Fetched from ONS API on every page load — updates automatically each time the ONS publishes a new monthly bulletin |
-| Deficit rate (£4,090/sec) | OBR forecast — updated manually 2–3 times per year |
-| Spending, receipts, welfare, NHS | OBR Fiscal Outlook — updated manually 2–3 times per year |
+| Debt base figure | Fetched from ONS API on page load and hourly; the fallback is September 2026 |
+| Borrowing rate (£3,662/sec) | OBR March 2026 2026-27 forecast, annualized; update after the October 2026 EFO |
+| Spending, receipts, interest, welfare, and pensioner spending | OBR March 2026 2026-27 forecasts; update after the October 2026 EFO |
+| NHS revenue limit | 2026-27 NHS England financial directions |
 | Counter motion | Live in your browser — extrapolated in real time from the above figures |
  
-The debt counter ticks every 100ms in your browser. If the ONS API is unavailable, the page falls back gracefully to the most recently hardcoded figures.
+The debt counter ticks in your browser. Finance cards are pro-rated shares of annual forecast totals, not actual year-to-date outturn. If the ONS API is unavailable, the page uses the September 2026 fallback or a more recent valid cached figure.
  
 ---
  
@@ -59,15 +61,14 @@ The debt counter ticks every 100ms in your browser. If the ONS API is unavailabl
  
 | Figure | Source |
 |--------|--------|
-| National debt base figure | [ONS API — series BKQK](https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk) |
-| Debt at end of April 2026 (94.2% of GDP) | [House of Commons Library](https://commonslibrary.parliament.uk/research-briefings/sn02812/) |
-| Deficit 2025-26 (~£129bn) | [ONS Public Sector Finances](https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance) |
-| Total spending & receipts | [OBR Brief Guide to Public Finances](https://obr.uk/forecasts-in-depth/brief-guides-and-explainers/public-finances/) |
-| Welfare spending (£333bn) | OBR Annually Managed Expenditure forecast 2025-26 |
-| NHS budget (~£196bn) | [NHS England Financial Performance](https://www.england.nhs.uk/) |
-| UK GDP (~£3.1tn nominal) | [ONS GDP Estimates](https://www.ons.gov.uk/economy/grossdomesticproductgdp) |
-| Population (67.6m) | ONS mid-2024 estimate |
-| Taxpayers (~34m) | HMRC 2024/25 |
+| National debt base figure | [ONS series BKQK](https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk), latest available observation |
+| 2026-27 borrowing forecast (£115.5bn) | [OBR Economic and Fiscal Outlook, March 2026](https://obr.uk/efo/economic-and-fiscal-outlook-march-2026/) |
+| Total managed expenditure, receipts, interest, welfare, and pensioner spending | OBR March 2026 forecast tables; annual cash amounts rounded where shown |
+| NHS England Group and NHS providers revenue limit (£215.352bn) | [2026-27 NHS England financial directions](https://www.gov.uk/government/publications/2026-to-2027-financial-directions-to-nhs-england/2026-to-2027-financial-directions-to-nhs-england) |
+| Defence outturn (£62.0bn) | Ministry of Defence 2025-26 actual, as summarized by the [House of Commons Library](https://commonslibrary.parliament.uk/research-briefings/cbp-8175/) |
+| Real GDP growth in 2025 (+1.2%) | [ONS GDP quarterly national accounts, April to June 2026](https://www.ons.gov.uk/economy/grossdomesticproductgdp/bulletins/quarterlynationalaccounts/apriltojune2026) |
+| UK population (69,483,900) | [ONS mid-2025 estimate](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/bulletins/annualmidyearpopulationestimates/mid2025) |
+| Taxpayer denominator (40.8m) | [HMRC Income Tax Liabilities Statistics, July 2026](https://www.gov.uk/government/statistics/income-tax-liabilities-statistics-tax-year-2023-to-2024-to-tax-year-2026-to-2027/bulletin-commentary) |
  
 All figures are approximate and based on the most recently published data at the time of writing. The clock is for **illustrative purposes** and should not be used for financial or academic research without cross-referencing the primary sources above.
  
@@ -79,8 +80,8 @@ Everything runs in the browser using vanilla JavaScript. On page load, the scrip
  
 1. Fetches the latest public sector net debt figure from the ONS API (series BKQK) and uses it as the base
 2. Falls back to hardcoded figures if the API is unavailable
-3. Calculates how many seconds have elapsed since the start of the current UK fiscal year (6th April)
-4. Multiplies that by the known per-second rates of change
+3. Calculates how many seconds have elapsed since the start of the current public-sector financial year (1 April)
+4. Pro-rates the annual OBR forecast totals across the year; these are not actual ONS year-to-date outturns
 5. Updates the displayed figures every second (hero debt counter updates every 100ms for a smooth ticker effect)
 There are no third-party dependencies beyond two Google Fonts. No cookies, no tracking.
  
@@ -88,7 +89,7 @@ There are no third-party dependencies beyond two Google Fonts. No cookies, no tr
  
 ## Maintaining the Data
  
-The ONS debt base figure updates automatically on every page load. Everything else is controlled by a small block of constants at the top of the `<script>` section in `index.html` and requires a manual update when new OBR figures are published.
+The ONS debt base figure updates automatically on page load and hourly. Forecast assumptions are controlled by constants near the top of the `<script>` section in `index.html` and require a manual update when new OBR forecasts are published. At this refresh, the October 2026 forecast was not yet present in the OBR publication archive.
  
 ### Maintenance Calendar
  
@@ -98,7 +99,7 @@ Put these three dates in your calendar each year:
 |------|-------|----------------|
 | **March** | OBR Spring Forecast | Minor revisions — check and update forecasts if materially changed |
 | **October / November** | Autumn Budget | Main update of the year — update all spending and deficit constants |
-| **6th April** | UK fiscal year rollover | Roll `FISCAL_YEAR_START` forward one year |
+| **1st April** | UK public-sector financial year rollover | Roll `FISCAL_YEAR_START` forward one year |
  
 In practice the **Autumn Budget** is the most important update. The Spring Forecast often only makes minor revisions and may not need any changes.
  
@@ -108,45 +109,41 @@ All constants are at the top of the `<script>` block in `index.html`. Open the f
  
 | Constant | What it is | Where to find the new figure |
 |----------|-----------|------------------------------|
-| `FISCAL_YEAR_START` | Start date of the current UK fiscal year | Always `new Date('YYYY-04-06T00:00:00Z')` — just increment the year each April |
+| `FISCAL_YEAR_START` | Start date of the current UK public-sector financial year | Always `new Date('YYYY-04-01T00:00:00Z')` — just increment the year each April |
 | `FALLBACK_DEBT` | Debt base figure used if the ONS API is unavailable | [ONS BKQK series](https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk) — latest monthly figure in £m × 1,000,000 |
-| `DEBT_PER_SEC` | Rate at which debt grows per second | New annual deficit ÷ 31,536,000 (see worked example below) |
-| `SPENDING_ANNUAL` | Total planned government spending for the fiscal year | [OBR Brief Guide to Public Finances](https://obr.uk/forecasts-in-depth/brief-guides-and-explainers/public-finances/) — total managed expenditure |
-| `TAX_ANNUAL` | Total expected tax receipts for the fiscal year | Same OBR source — total receipts |
-| `INTEREST_ANNUAL` | Annual debt interest payments | Same OBR source — net interest payments |
-| `WELFARE_ANNUAL` | Annual welfare and social protection spending | Same OBR source — annually managed expenditure |
-| `NHS_ANNUAL` | NHS England budget for the fiscal year | [NHS England financial updates](https://www.england.nhs.uk/) |
-| `GDP_ANNUAL` | Nominal UK GDP for the year | [ONS GDP releases](https://www.ons.gov.uk/economy/grossdomesticproductgdp) |
+| `DEBT_PER_SEC` | Annualized borrowing forecast per second | OBR annual borrowing forecast ÷ seconds in the fiscal year |
+| `SPENDING_ANNUAL` | Total managed expenditure | OBR forecast tables |
+| `TAX_ANNUAL` | Current receipts | OBR forecast tables |
+| `INTEREST_ANNUAL` | Net debt interest | OBR forecast tables |
+| `WELFARE_ANNUAL` | Welfare spending | OBR forecast tables |
+| `PENSION_ANNUAL` | Pensioner spending, not State Pension alone | OBR forecast tables |
+| `NHS_ANNUAL` | NHS England Group and providers revenue limit | DHSC financial directions |
+| `GDP_ANNUAL` | Nominal GDP forecast | OBR forecast tables |
  
 ### Worked Example — Calculating DEBT_PER_SEC
  
-After each Budget, the OBR publishes a new deficit forecast. To convert it to a per-second rate:
+After each Budget, the OBR publishes a new borrowing forecast. To convert it to an annualized per-second rate:
  
 ```
-New deficit (e.g. £120 billion) ÷ 31,536,000 seconds in a year = £3,806 per second
+New borrowing forecast (e.g. £120 billion) ÷ 31,536,000 seconds in a year = £3,806 per second
 ```
  
 So in `index.html` you would update:
 ```javascript
-const DEBT_PER_SEC = 3806;  // £120bn deficit ÷ 31,536,000 sec
+const DEBT_PER_SEC = 3806;  // £120bn borrowing forecast ÷ 31,536,000 sec
 ```
  
-Also update the matching display values in the HTML — search for `£4,090` and replace with the new figure in:
-- The speed bar (`speed-rate` div)
-- The deficit card rate badge (`card-rate` div)
-- The ticker tape (`TICKER_DATA` array)
-- The hero sub (`hero-sub-item` for "Rising at")
-- The freshness panel (`freshness-sub` div)
+Update the displayed rate and annual forecast together. Prefer deriving the rate from the annual forecast rather than maintaining duplicate strings.
 ### Don't Forget the Ticker and Display Labels
  
 After updating the constants, also update these hardcoded display strings in the HTML (search for the old figures):
  
 | Location | What to update |
 |----------|---------------|
-| Hero section | "Rising at: £X,XXX/sec" and "Annual deficit: ~£XXXbn" |
+| Hero section | Borrowing forecast and annualized per-second estimate |
 | Speed bar | The per-second rate displayed |
 | Deficit card | The `▲ £X,XXX/sec` badge |
-| Ticker tape | `ANNUAL DEFICIT`, `DEBT GROWTH` entries |
+| Ticker tape | Borrowing forecast and annualized debt growth entries |
 | Freshness panel | The "Extrapolated at £X,XXX/sec" note |
 | README | This file — update figures to match |
  
@@ -158,4 +155,4 @@ Free to use, share, and modify. If you build on it, a credit back to this repo w
  
 ---
  
-*Data last reviewed: May 2026*
+*Data last reviewed: 28 October 2026. OBR figures use the March 2026 forecast because the October forecast was not yet published at review time.*
