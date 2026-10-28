@@ -47,7 +47,7 @@ Figures are colour coded to give an at-a-glance sense of their nature:
  
 | What | How fresh |
 |------|-----------|
-| Debt base figure | Fetched from ONS API on page load and hourly; the fallback is September 2026 |
+| Debt base figure and debt-to-GDP ratio | ONS BKQK and HF6X series fetched on page load and hourly; September 2026 values are fallbacks |
 | Borrowing rate (£3,662/sec) | OBR March 2026 2026-27 forecast, annualized; update after the October 2026 EFO |
 | Spending, receipts, interest, welfare, and pensioner spending | OBR March 2026 2026-27 forecasts; update after the October 2026 EFO |
 | NHS revenue limit | 2026-27 NHS England financial directions |
@@ -62,6 +62,7 @@ The debt counter ticks in your browser. Finance cards are pro-rated shares of an
 | Figure | Source |
 |--------|--------|
 | National debt base figure | [ONS series BKQK](https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk), latest available observation |
+| Debt-to-GDP ratio (94.0% in September 2026) | [ONS series HF6X](https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/hf6x), latest available observation |
 | 2026-27 borrowing forecast (£115.5bn) | [OBR Economic and Fiscal Outlook, March 2026](https://obr.uk/efo/economic-and-fiscal-outlook-march-2026/) |
 | Total managed expenditure, receipts, interest, welfare, and pensioner spending | OBR March 2026 forecast tables; annual cash amounts rounded where shown |
 | NHS England Group and NHS providers revenue limit (£215.352bn) | [2026-27 NHS England financial directions](https://www.gov.uk/government/publications/2026-to-2027-financial-directions-to-nhs-england/2026-to-2027-financial-directions-to-nhs-england) |

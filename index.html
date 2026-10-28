@@ -282,7 +282,7 @@
         <div class="hero-value" id="heroDebt" aria-live="off" aria-label="Current national debt">£0</div>
         <div class="hero-base" id="heroBase">Base: loading… · extrapolated live</div>
         <div class="hero-sub">
-          <div class="hero-sub-item">Debt/GDP: <strong id="debtGDP">—</strong></div>
+          <div class="hero-sub-item">Debt/GDP (ONS): <strong id="debtGDP">—</strong></div>
           <div class="hero-sub-item">Rising at: <strong>£3,662/sec</strong></div>
           <div class="hero-sub-item">2026-27 borrowing forecast: <strong>£115.5bn</strong></div>
           <div class="hero-sub-item">Per household: <strong>~£104,000</strong></div>
@@ -432,9 +432,9 @@
       <div class="comp-desc">The 2026-27 interest forecast is <strong id="compInterestEdText">—</strong> times the 2025-26 education reference estimate.</div>
     </div>
     <div class="comp-card">
-      <div class="comp-label">Debt vs Annual GDP</div>
+      <div class="comp-label">ONS Debt as % of GDP</div>
       <div class="comp-value" id="compDebtGDP">—</div>
-      <div class="comp-desc">The national debt is equivalent to <strong id="compDebtGDPText">—</strong> of everything the UK economy produces in a year.</div>
+      <div class="comp-desc">Latest ONS observation: <strong id="compDebtGDPText">—</strong> for <span id="compDebtGDPDate">—</span>.</div>
     </div>
     <div class="comp-card">
       <div class="comp-label">Interest as % of Current Receipts</div>
@@ -590,7 +590,7 @@
       </div>
     </div>
     <div class="freshness-note">
-      The debt counter uses published <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk" target="_blank" rel="noopener">ONS PSND data (series BKQK)</a> fetched on page load and refreshed hourly. The £3,662/sec rate is based on the OBR March 2026 forecast of £115.5bn borrowing in 2026-27; it is an annualized estimate, not actual daily borrowing. Aggregate finance cards show a pro-rated share of that forecast, not ONS year-to-date outturn. OBR annual estimates will need review when the October 2026 forecast is published. All figures are indicative and for illustrative purposes only.
+      The debt counter uses <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk" target="_blank" rel="noopener">ONS PSND data (series BKQK)</a>, and the debt-to-GDP ratio uses <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/hf6x" target="_blank" rel="noopener">ONS series HF6X</a>; both refresh hourly. The £3,662/sec rate is based on the OBR March 2026 forecast of £115.5bn borrowing in 2026-27; it is an annualized estimate, not actual daily borrowing. Aggregate finance cards show a pro-rated share of that forecast, not ONS year-to-date outturn. OBR annual estimates will need review when the October 2026 forecast is published. All figures are indicative and for illustrative purposes only.
     </div>
   </div>
 
@@ -635,6 +635,8 @@
   const FISCAL_YEAR_START  = new Date('2026-04-01T00:00:00Z');
   const FALLBACK_DEBT      = 3004.964e9;
   const FALLBACK_DEBT_AT   = new Date('2026-09-30T00:00:00Z').getTime();
+  const FALLBACK_DEBT_GDP  = 94.0;
+  const FALLBACK_DEBT_GDP_DATE = 'September 2026';
   const DEBT_PER_SEC       = 3662;
   const SPENDING_ANNUAL    = 1421e9;
   const TAX_ANNUAL         = 1304e9;
@@ -653,6 +655,8 @@
 
   let DEBT_BASE    = FALLBACK_DEBT;
   let DEBT_BASE_AT = FALLBACK_DEBT_AT;
+  let ONS_DEBT_GDP = FALLBACK_DEBT_GDP;
+  let ONS_DEBT_GDP_DATE = FALLBACK_DEBT_GDP_DATE;
   let isPaused     = false;
   let showProj     = false;
   let baseLabel    = 'Base: £3,005bn (end-September 2026 ONS)';
@@ -676,6 +680,14 @@
   function updateHeroBase() {
     const el = document.getElementById('heroBase');
     if (el) el.textContent = baseLabel + ' · extrapolated live at £3,662/sec';
+  }
+
+  function updateDebtGDPDisplays() {
+    const ratio = ONS_DEBT_GDP.toFixed(1) + '%';
+    document.getElementById('debtGDP').textContent = ratio;
+    document.getElementById('compDebtGDP').textContent = ratio;
+    document.getElementById('compDebtGDPText').textContent = ratio;
+    document.getElementById('compDebtGDPDate').textContent = ONS_DEBT_GDP_DATE;
   }
 
   async function fetchONSDebt() {
@@ -721,6 +733,27 @@
   }
   fetchONSDebt();
   setInterval(fetchONSDebt, 3600000);
+
+  async function fetchONSDebtGDP() {
+    try {
+      const res = await fetch('https://api.beta.ons.gov.uk/v1/data?uri=/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/hf6x/pusf');
+      if (!res.ok) throw new Error('ONS API returned ' + res.status);
+      const data = await res.json();
+      const months = data.months || [];
+      const sorted = [...months].sort((a,b) => new Date(b.year+' '+b.month) - new Date(a.year+' '+a.month));
+      const latest = sorted.find(month => Number.isFinite(parseFloat(month.value)));
+      if (!latest) throw new Error('No monthly debt-to-GDP data');
+      ONS_DEBT_GDP = parseFloat(latest.value);
+      ONS_DEBT_GDP_DATE = `${latest.month} ${latest.year}`;
+      updateDebtGDPDisplays();
+    } catch(err) {
+      console.warn('ONS debt-to-GDP fetch failed, using fallback:', err.message);
+      updateDebtGDPDisplays();
+    }
+  }
+  updateDebtGDPDisplays();
+  fetchONSDebtGDP();
+  setInterval(fetchONSDebtGDP, 3600000);
 
   // ─────────────────────────────────────────────────────────
   // HELPERS
@@ -790,7 +823,7 @@
     document.getElementById('interestPerTaxpayer').textContent = '£' + Math.round(INTEREST_ANNUAL/TAXPAYERS).toLocaleString('en-GB');
     document.getElementById('interestPerTaxpayerContext').textContent = '£' + Math.round(INTEREST_ANNUAL/TAXPAYERS).toLocaleString('en-GB') + ' each';
     document.getElementById('deficitPerTaxpayer').textContent = '£' + Math.round((DEBT_PER_SEC*SEC_IN_YEAR)/TAXPAYERS).toLocaleString('en-GB');
-    document.getElementById('debtGDP').textContent = (debt/GDP_ANNUAL*100).toFixed(1) + '%';
+    document.getElementById('debtGDP').textContent = ONS_DEBT_GDP.toFixed(1) + '%';
 
     // Comparisons
     const intDefRatio = (INTEREST_ANNUAL/DEFENCE_ANNUAL).toFixed(1);
@@ -802,7 +835,7 @@
     const intEdRatio = (INTEREST_ANNUAL/EDUCATION_ANNUAL).toFixed(1);
     document.getElementById('compInterestEd').textContent = intEdRatio + '×';
     document.getElementById('compInterestEdText').textContent = intEdRatio + 'x';
-    const debtGDPpct = (debt/GDP_ANNUAL*100).toFixed(1) + '%';
+    const debtGDPpct = ONS_DEBT_GDP.toFixed(1) + '%';
     document.getElementById('compDebtGDP').textContent = debtGDPpct;
     document.getElementById('compDebtGDPText').textContent = debtGDPpct;
 
@@ -827,14 +860,14 @@
   function getTakeaways(debt) {
     const intDefX   = (INTEREST_ANNUAL/DEFENCE_ANNUAL).toFixed(1);
     const intTaxPct = (INTEREST_ANNUAL/TAX_ANNUAL*100).toFixed(1);
-    const debtGDP   = (debt/GDP_ANNUAL*100).toFixed(1);
+    const debtGDP   = ONS_DEBT_GDP.toFixed(1);
     const perSec    = '£3,662';
     const perTax    = '£' + Math.round(debt/TAXPAYERS).toLocaleString('en-GB');
     return [
       `The 2026-27 borrowing forecast averages <strong>${perSec} per second</strong> — about £219,720 per minute.`,
       `Debt interest payments are <strong>${intDefX}× the size of the entire defence budget</strong> — more is spent on interest than on the armed forces.`,
       `<strong>${intTaxPct}% of every pound raised in tax</strong> goes directly to servicing debt interest before a single public service is funded.`,
-      `The national debt now stands at <strong>${debtGDP}% of GDP</strong> — levels last seen in the early 1960s.`,
+      `The latest ONS debt-to-GDP figure is <strong>${debtGDP}% for ${ONS_DEBT_GDP_DATE}</strong>.`,
       `Each taxpayer's notional share of the debt is <strong>${perTax}</strong> — using HMRC's 2026-27 taxpayer projection.`,
       `The 2026-27 borrowing forecast is equivalent to <strong>${((DEBT_PER_SEC*SEC_IN_YEAR)/NHS_ANNUAL*100).toFixed(0)}% of the NHS England revenue limit</strong>.`,
       `The OBR forecasts <strong>~£111bn in net debt interest</strong> for 2026-27.`,
@@ -858,7 +891,7 @@
     const debt = currentDebt();
     const items = [
       {label:'NATIONAL DEBT', val:'£'+(debt/1e9).toFixed(0)+'bn', cls:'up'},
-      {label:'DEBT/GDP', val:(debt/GDP_ANNUAL*100).toFixed(1)+'%', cls:'up'},
+      {label:'ONS DEBT/GDP '+ONS_DEBT_GDP_DATE.toUpperCase(), val:ONS_DEBT_GDP.toFixed(1)+'%', cls:'up'},
       {label:'2026-27 BORROWING FORECAST', val:'£115.5bn', cls:'up'},
       {label:'DEBT GROWTH ESTIMATE', val:'£3,662/sec', cls:'up'},
       {label:'REAL GDP GROWTH 2025', val:'+1.2%', cls:'down'},
