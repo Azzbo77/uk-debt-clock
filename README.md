@@ -12,22 +12,15 @@ No server required. No frameworks. Just a single HTML file.
 The clock uses published figures from the Office for National Statistics (ONS), the Office for Budget Responsibility (OBR), NHS England, and the House of Commons Library. It shows live estimates, not real-time government accounts.
  
 ### National Debt
-The headline figure uses the latest ONS public sector net debt observation available from the API. As of 28 October 2026, the latest observation was **£3,005.0 billion at the end of September 2026**. The fallback is that same observation. The separate **£3,662 per second** rate annualizes the OBR March 2026 forecast of £115.5 billion borrowing for 2026-27; actual borrowing is uneven and should be checked against monthly ONS outturns.
+The headline figure uses the latest ONS public sector net debt observation available from the API. As of 28 October 2026, the latest observation was **£3,005.0 billion at the end of September 2026**. The fallback is that same observation. The separate **£4,224 per second** rate annualizes the OBR October 2026 forecast of £133.2 billion borrowing for 2026-27; actual borrowing is uneven and should be checked against monthly ONS outturns.
  
 ### Government Finances
-Pro-rated estimates against 2026-27 annual forecasts (the UK public-sector financial year starts 1 April) for:
-- Annual borrowing forecast
-- Total managed expenditure (~£1,421bn, OBR March 2026 forecast)
-- Current receipts (~£1,304bn, OBR March 2026 forecast)
-- Net debt interest (~£111bn, OBR March 2026 forecast)
-- Welfare spending (£352.8bn, OBR March 2026 forecast)
-- Pensioner spending (£169.2bn, OBR March 2026 forecast)
-- NHS England Group and NHS providers revenue limit (£215.352bn, 2026-27 financial directions)
+Pro-rated estimates against 2026-27 annual forecasts (the UK public-sector financial year starts 1 April) for borrowing, total managed expenditure (£1,449.2bn in Budget 2026), current receipts (~£1,316bn implied by spending less borrowing), and net debt interest (~£126.4bn, using the OBR's £15.4bn increase from March). Receipts and interest are approximate; welfare (£352.8bn) and pensioner spending (£169.2bn) remain static March 2026 reference values because updated category totals have not been verified. The NHS England Group and providers revenue limit remains £215.352bn; Budget 2026 separately announced £190m winter-pressure support.
 ### Per Citizen & Per Taxpayer
 Breakdowns of debt and annual borrowing per person and per taxpayer. The population base is ONS mid-2025 and the taxpayer divisor is HMRC's 2026-27 projection of 40.8 million income taxpayers; per-taxpayer figures are illustrative.
  
 ### Economy
-Running GDP estimate for the fiscal year, plus nominal GDP per second, based on the OBR March 2026 2026-27 forecast of £3.164 trillion.
+Running nominal GDP estimate for the fiscal year, plus nominal GDP per second, approximately implied (~£3.17tn) from the October OBR forecast's rounded PSNB and GDP ratios.
  
 ---
  
@@ -48,8 +41,10 @@ Figures are colour coded to give an at-a-glance sense of their nature:
 | What | How fresh |
 |------|-----------|
 | Debt base figure and debt-to-GDP ratio | ONS BKQK and HF6X series fetched on page load and hourly; September 2026 values are fallbacks |
-| Borrowing rate (£3,662/sec) | OBR March 2026 2026-27 forecast, annualized; update after the October 2026 EFO |
-| Spending, receipts, interest, welfare, and pensioner spending | OBR March 2026 2026-27 forecasts; update after the October 2026 EFO |
+| Borrowing rate (~£4,224/sec) | OBR October 2026 2026-27 forecast, annualized |
+| Spending | Budget 2026 total managed expenditure plans for 2026-27 |
+| Receipts and interest | Approximate figures derived from Budget 2026 and OBR October 2026 tables |
+| Welfare and pensioner spending | March 2026 OBR reference values; category figures not refreshed |
 | NHS revenue limit | 2026-27 NHS England financial directions |
 | Counter motion | Live in your browser — extrapolated in real time from the above figures |
  
@@ -63,8 +58,11 @@ The debt counter ticks in your browser. Finance cards are pro-rated shares of an
 |--------|--------|
 | National debt base figure | [ONS series BKQK](https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk), latest available observation |
 | Debt-to-GDP ratio (94.0% in September 2026) | [ONS series HF6X](https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/hf6x), latest available observation |
-| 2026-27 borrowing forecast (£115.5bn) | [OBR Economic and Fiscal Outlook, March 2026](https://obr.uk/efo/economic-and-fiscal-outlook-march-2026/) |
-| Total managed expenditure, receipts, interest, welfare, and pensioner spending | OBR March 2026 forecast tables; annual cash amounts rounded where shown |
+| 2026-27 borrowing forecast (£133.2bn) and fiscal ratios | [OBR Economic and Fiscal Outlook, October 2026](https://www.gov.uk/government/publications/october-2026-economic-and-fiscal-outlook) |
+| Total managed expenditure (£1,449.2bn) and public spending details | [Budget 2026 fiscal tables](https://www.gov.uk/government/publications/budget-2026-document/budget-2026-html) |
+| Receipts (~£1,316bn) | Approximate implied estimate: total managed expenditure less PSNB |
+| Net debt interest (~£126.4bn) | March OBR value plus October EFO's reported £15.4bn increase |
+| Welfare (£352.8bn) and pensioner spending (£169.2bn) | March 2026 OBR reference values; not presented as October forecasts |
 | NHS England Group and NHS providers revenue limit (£215.352bn) | [2026-27 NHS England financial directions](https://www.gov.uk/government/publications/2026-to-2027-financial-directions-to-nhs-england/2026-to-2027-financial-directions-to-nhs-england) |
 | Defence outturn (£62.0bn) | Ministry of Defence 2025-26 actual, as summarized by the [House of Commons Library](https://commonslibrary.parliament.uk/research-briefings/cbp-8175/) |
 | Real GDP growth in 2025 (+1.2%) | [ONS GDP quarterly national accounts, April to June 2026](https://www.ons.gov.uk/economy/grossdomesticproductgdp/bulletins/quarterlynationalaccounts/apriltojune2026) |
@@ -90,7 +88,7 @@ There are no third-party dependencies beyond two Google Fonts. No cookies, no tr
  
 ## Maintaining the Data
  
-The ONS debt base figure updates automatically on page load and hourly. Forecast assumptions are controlled by constants near the top of the `<script>` section in `index.html` and require a manual update when new OBR forecasts are published. At this refresh, the October 2026 forecast was not yet present in the OBR publication archive.
+The ONS debt base figure updates automatically on page load and hourly. Forecast assumptions are controlled by constants near the top of the `<script>` section in `index.html` and require a manual update when new OBR forecasts are published. At this refresh, the October 2026 EFO and Budget fiscal tables were reviewed; unsupported welfare and pensioner category forecasts are retained only as dated March references.
  
 ### Maintenance Calendar
  
@@ -156,4 +154,4 @@ Free to use, share, and modify. If you build on it, a credit back to this repo w
  
 ---
  
-*Data last reviewed: 28 October 2026. OBR figures use the March 2026 forecast because the October forecast was not yet published at review time.*
+*Data last reviewed: 28 October 2026. Forecast values use the October 2026 EFO and Budget 2026 tables where verified; welfare and pensioner totals remain dated March 2026 references.*

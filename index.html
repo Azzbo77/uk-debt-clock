@@ -283,8 +283,8 @@
         <div class="hero-base" id="heroBase">Base: loading… · extrapolated live</div>
         <div class="hero-sub">
           <div class="hero-sub-item">Debt/GDP (ONS): <strong id="debtGDP">—</strong></div>
-          <div class="hero-sub-item">Rising at: <strong>£3,662/sec</strong></div>
-          <div class="hero-sub-item">2026-27 borrowing forecast: <strong>£115.5bn</strong></div>
+          <div class="hero-sub-item">Borrowing forecast rate: <strong>£4,224/sec</strong></div>
+          <div class="hero-sub-item">2026-27 borrowing forecast: <strong>£133.2bn</strong></div>
           <div class="hero-sub-item">Per household: <strong>~£104,000</strong></div>
         </div>
       </div>
@@ -301,7 +301,7 @@
   <div class="speed-bar" aria-hidden="true">
     <div class="speed-header">
       <div class="speed-title">◈ Debt accumulation rate</div>
-      <div class="speed-rate">£3,662 <span style="font-size:0.7rem;color:var(--dim)">per second</span></div>
+      <div class="speed-rate">£4,224 <span style="font-size:0.7rem;color:var(--dim)">per second</span></div>
     </div>
     <div class="bar-track"><div class="bar-fill" style="width:72%"></div></div>
   </div>
@@ -314,74 +314,74 @@
 
   <!-- WORKING DAY STATS -->
   <div class="workday-bar" aria-label="Debt added per working period">
-    <div class="workday-item"><div class="workday-label">Per working hour</div><div class="workday-value">£13,183,200</div></div>
+    <div class="workday-item"><div class="workday-label">Per working hour</div><div class="workday-value">£15,206,400</div></div>
     <div class="workday-divider" aria-hidden="true"></div>
-    <div class="workday-item"><div class="workday-label">Per working day (8 hrs)</div><div class="workday-value">£105,465,600</div></div>
+    <div class="workday-item"><div class="workday-label">Per working day (8 hrs)</div><div class="workday-value">£121,651,200</div></div>
     <div class="workday-divider" aria-hidden="true"></div>
-    <div class="workday-item"><div class="workday-label">Per working week</div><div class="workday-value">£527,328,000</div></div>
+    <div class="workday-item"><div class="workday-label">Per working week</div><div class="workday-value">£608,256,000</div></div>
     <div class="workday-divider" aria-hidden="true"></div>
-    <div class="workday-item"><div class="workday-label">Per working month (22 days)</div><div class="workday-value">£2,320,243,200</div></div>
+    <div class="workday-item"><div class="workday-label">Per working month (22 days)</div><div class="workday-value">£2,676,326,400</div></div>
   </div>
 
   <!-- GOVERNMENT FINANCES -->
-  <div class="section-title">Government Finances — 2026-27 Pro-rated Estimates</div>
+  <div class="section-title">Government Finances — 2026-27 Forecast Estimates</div>
   <div class="grid" role="list">
 
     <div class="card accent-red" role="listitem">
       <div class="card-label">Borrowing Estimate
         <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is the borrowing estimate?">?</span>
-        <div class="tooltip-box" role="tooltip">Public sector net borrowing is the gap between public-sector expenditure and receipts. This card shows a pro-rated share of the OBR's annual forecast; actual monthly borrowing varies.</div>
+        <div class="tooltip-box" role="tooltip">Public sector net borrowing is the gap between public-sector expenditure and receipts. The OBR October 2026 forecast is £133.2bn for 2026-27; this card shows a pro-rated estimate, not ONS year-to-date outturn.</div>
       </div>
       <div class="card-value val-red" id="deficitCard">£0</div>
       <div class="card-sub">Pro-rated borrowing estimate, not ONS outturn</div>
-      <div class="card-rate">▲ £3,662/sec</div>
+      <div class="card-rate">▲ £4,224/sec</div>
     </div>
 
     <div class="card accent-red" role="listitem">
       <div class="card-label">Total Govt Spending
         <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is total government spending?">?</span>
-        <div class="tooltip-box" role="tooltip">Total managed expenditure — everything the government spends including departments, welfare, pensions and debt interest. OBR March 2026 forecast: about £1,421bn for 2026-27.</div>
+        <div class="tooltip-box" role="tooltip">Total managed expenditure — everything the government spends including departments, welfare, pensions and debt interest. Budget 2026 plans: £1,449.2bn for 2026-27.</div>
       </div>
       <div class="card-value val-red" id="spendingCard">£0</div>
-      <div class="card-sub">~£1,421bn OBR forecast for 2026-27</div>
-      <div class="card-rate">▲ £45,060/sec</div>
+      <div class="card-sub">£1,449.2bn Budget 2026 plans for 2026-27</div>
+      <div class="card-rate">▲ £45,951/sec</div>
     </div>
 
     <div class="card accent-green" role="listitem">
       <div class="card-label">Government Receipts
         <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What are government receipts?">?</span>
-        <div class="tooltip-box" role="tooltip">Total current receipts, including taxes, National Insurance, interest and dividend receipts, and other income. OBR March 2026 forecast: about £1,304bn for 2026-27.</div>
+        <div class="tooltip-box" role="tooltip">Total current receipts, including taxes, National Insurance, interest and dividend receipts, and other income. Approximate 2026-27 figure implied by Budget 2026 total spending less OBR borrowing.</div>
       </div>
       <div class="card-value val-green" id="taxCard">£0</div>
-      <div class="card-sub">~£1,304bn OBR forecast for 2026-27</div>
+      <div class="card-sub">~£1,316bn implied for 2026-27</div>
     </div>
 
     <div class="card accent-red" role="listitem">
       <div class="card-label">Debt Interest
         <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What are debt interest payments?">?</span>
-        <div class="tooltip-box" role="tooltip">Net debt interest, after the Asset Purchase Facility. The OBR March 2026 forecast is about £111bn for 2026-27.</div>
+        <div class="tooltip-box" role="tooltip">Net debt interest, after the Asset Purchase Facility. The October OBR forecast raises the 2026-27 estimate by about £15.4bn from March, to roughly £126bn.</div>
       </div>
       <div class="card-value val-red" id="interestCard">£0</div>
-      <div class="card-sub">~£111bn OBR forecast for 2026-27</div>
-      <div class="card-rate">▲ £3,520/sec</div>
+      <div class="card-sub">~£126bn OBR forecast for 2026-27</div>
+      <div class="card-rate">▲ £4,005/sec</div>
     </div>
 
     <div class="card accent-amber" role="listitem">
-      <div class="card-label">Welfare &amp; Social Protection
+      <div class="card-label">Welfare Reference (March 2026)
         <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is welfare spending?">?</span>
-        <div class="tooltip-box" role="tooltip">Social security and tax-credit spending, including Universal Credit, housing benefit, disability benefits, and pensioner benefits. OBR March 2026 forecast: £352.8bn for 2026-27.</div>
+        <div class="tooltip-box" role="tooltip">Social security and tax-credit spending, including Universal Credit, housing benefit, disability benefits, and pensioner benefits. £352.8bn is the March 2026 OBR forecast, retained as a dated reference pending an updated category table.</div>
       </div>
       <div class="card-value val-amber" id="welfareCard">£0</div>
-      <div class="card-sub">£352.8bn OBR forecast for 2026-27</div>
+      <div class="card-sub">£352.8bn March 2026 reference forecast</div>
     </div>
 
     <div class="card accent-amber" role="listitem">
-      <div class="card-label">Pensioner Benefits
+      <div class="card-label">Pensioner Spending Reference (March 2026)
         <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What are pensioner benefits?">?</span>
-        <div class="tooltip-box" role="tooltip">The OBR forecast for 2026-27 is £169.2bn for pensioner spending, including State Pension, Pension Credit, pensioner housing benefit, and Winter Fuel Payments.</div>
+        <div class="tooltip-box" role="tooltip">The March 2026 OBR forecast was £169.2bn for pensioner spending, including State Pension, Pension Credit, pensioner housing benefit, and Winter Fuel Payments. This remains a dated reference.</div>
       </div>
       <div class="card-value val-amber" id="pensionCard">£0</div>
-      <div class="card-sub">£169.2bn OBR forecast for 2026-27</div>
+      <div class="card-sub">£169.2bn March 2026 reference forecast</div>
     </div>
 
     <div class="card accent-amber" role="listitem">
@@ -390,7 +390,7 @@
         <div class="tooltip-box" role="tooltip">The NHS England budget covers hospital services, GP practices, mental health and community care. Funded entirely by general taxation — the UK's largest public service by spend.</div>
       </div>
       <div class="card-value val-amber" id="nhsCard">£0</div>
-      <div class="card-sub">£215.4bn revenue limit for 2026-27</div>
+      <div class="card-sub">£215.352bn revenue limit; £190m winter support separately announced</div>
     </div>
 
     <div class="card accent-red" role="listitem">
@@ -453,8 +453,8 @@
   <div class="context-grid">
     <div class="context-card">
       <div class="context-label">Debt interest opportunity cost</div>
-      <div class="context-value">~£111bn / year</div>
-      <div class="context-desc">The OBR March 2026 forecast for net debt interest in 2026-27. Every pound spent on interest cannot fund services, tax cuts or investment.</div>
+      <div class="context-value">~£126bn / year</div>
+      <div class="context-desc">The October 2026 OBR forecast is about £15.4bn higher in 2026-27 than March. Every pound spent on interest cannot fund services, tax cuts or investment.</div>
     </div>
     <div class="context-card">
       <div class="context-label">Real regular pay growth</div>
@@ -467,9 +467,9 @@
       <div class="context-desc">Average UK house prices have risen only modestly in 2025–26 (around 1–2.5% annually depending on the index). After the high inflation of 2021–23, real house prices remain below earlier peaks in many areas, especially London and the South East.</div>
     </div>
     <div class="context-card">
-      <div class="context-label">What £3,662 per second means</div>
-      <div class="context-value">£219,720 / minute</div>
-      <div class="context-desc">At the OBR March 2026 borrowing forecast rate, the estimate rises by roughly £13.2 million every working hour and £105.5 million over an 8-hour working day.</div>
+      <div class="context-label">What £4,224 per second means</div>
+      <div class="context-value">£253,440 / minute</div>
+      <div class="context-desc">At the OBR October 2026 borrowing forecast rate, the estimate rises by roughly £15.2 million every working hour and £121.7 million over an 8-hour working day.</div>
     </div>
     <div class="context-card">
       <div class="context-label">Interest vs taxpayer</div>
@@ -488,22 +488,22 @@
     <div class="chart-header">
       <div>
         <div class="chart-title">◈ UK Public Sector Net Debt as % of GDP</div>
-        <div class="chart-subtitle" id="chartSubtitle">Historical data — ONS. Click "+ OBR Projections to 2030" to extend the chart.</div>
+        <div class="chart-subtitle" id="chartSubtitle">Historical data — ONS. Click "+ OBR Projections to 2031-32" to extend the chart.</div>
       </div>
       <div class="chart-toggle" role="group" aria-label="Chart view options">
         <button class="chart-btn active" id="chartHistBtn" aria-pressed="true">Historical only</button>
-        <button class="chart-btn" id="chartProjBtn" aria-pressed="false">+ OBR Projections to 2030</button>
+        <button class="chart-btn" id="chartProjBtn" aria-pressed="false">+ OBR Projections to 2031-32</button>
       </div>
     </div>
     <div class="chart-wrap">
-      <canvas id="debtChart" role="img" aria-label="Chart showing UK public sector net debt as percentage of GDP from 2000 to present with optional OBR projections to 2030"></canvas>
+      <canvas id="debtChart" role="img" aria-label="Chart showing UK public sector net debt as percentage of GDP from 2000 to present with optional October 2026 OBR projections to 2031-32"></canvas>
     </div>
     <div class="chart-labels" aria-hidden="true">
     <span>2000</span><span>2005</span><span>2010</span><span>2015</span><span>2020</span><span>2025</span><span id="chartEndLabel">2026</span>
     </div>
     <div class="chart-legend" aria-hidden="true">
       <div class="legend-item"><div class="legend-dot" style="background:var(--ticker)"></div> Historical (ONS PSND ex)</div>
-      <div class="legend-item" id="projLegend" style="display:none"><div class="legend-dot" style="background:var(--blue);opacity:0.8"></div> OBR Projection — <em>Economic &amp; Fiscal Outlook, March 2026</em></div>
+      <div class="legend-item" id="projLegend" style="display:none"><div class="legend-dot" style="background:var(--blue);opacity:0.8"></div> OBR end-March PSND/GDP projection — <em>October 2026 EFO</em></div>
     </div>
   </div>
 
@@ -535,15 +535,15 @@
         <div class="tooltip-box" role="tooltip">Gross Domestic Product — the total value of all goods and services produced in the UK. ONS estimates real GDP grew by 1.2% in 2025. The debt/GDP ratio shows how borrowing compares to the size of the economy.</div>
       </div>
       <div class="card-value val-green" id="gdpCard">£0</div>
-      <div class="card-sub">£3.164 trillion nominal GDP forecast for 2026-27; real growth +1.2% in 2025</div>
+      <div class="card-sub">~£3.17tn implied from rounded OBR 2026-27 borrowing/GDP figures</div>
     </div>
     <div class="card accent-green">
       <div class="card-label">GDP per Second
         <span class="tooltip-icon" tabindex="0" role="button" aria-expanded="false" aria-label="What is GDP per second?">?</span>
-        <div class="tooltip-box" role="tooltip">How much nominal economic value the UK generates every second (about £100,000 using the 2026-27 OBR forecast). Compare this with the annualized borrowing estimate of £3,662/sec.</div>
+        <div class="tooltip-box" role="tooltip">How much nominal economic value the UK generates every second (about £100,000 using the rounded 2026-27 OBR forecast ratios). Compare this with the annualized borrowing estimate of £4,224/sec.</div>
       </div>
       <div class="card-value val-green" id="gdpSecCard">£0</div>
-      <div class="card-sub">vs debt growth of £3,662/sec</div>
+      <div class="card-sub">vs borrowing estimate of £4,224/sec</div>
     </div>
     <div class="card accent-amber">
       <div class="card-label">UK Population</div>
@@ -575,22 +575,22 @@
       </div>
       <div class="freshness-item">
         <div class="freshness-label">Borrowing rate</div>
-        <div class="freshness-value"><a href="https://obr.uk/efo/economic-and-fiscal-outlook-march-2026/" target="_blank" rel="noopener" style="color:var(--bright)">OBR Fiscal Outlook, Mar 2026 ↗</a></div>
-        <div class="freshness-sub">Latest published forecast: March 2026</div>
+        <div class="freshness-value"><a href="https://www.gov.uk/government/publications/october-2026-economic-and-fiscal-outlook" target="_blank" rel="noopener" style="color:var(--bright)">OBR Fiscal Outlook, Oct 2026 ↗</a></div>
+        <div class="freshness-sub">Published 28 October 2026</div>
       </div>
       <div class="freshness-item">
         <div class="freshness-label">Spending &amp; receipts</div>
-        <div class="freshness-value"><a href="https://obr.uk/forecasts-in-depth/brief-guides-and-explainers/public-finances/" target="_blank" rel="noopener" style="color:var(--bright)">OBR Public Finances Guide ↗</a></div>
-        <div class="freshness-sub">October 2026 forecast not yet published</div>
+        <div class="freshness-value"><a href="https://www.gov.uk/government/publications/budget-2026-document/budget-2026-html" target="_blank" rel="noopener" style="color:var(--bright)">Budget 2026 fiscal tables ↗</a></div>
+        <div class="freshness-sub">Reviewed after October 2026 Budget</div>
       </div>
       <div class="freshness-item">
         <div class="freshness-label">Counter motion</div>
         <div class="freshness-value"><span class="f-dot f-live"></span> Live in browser</div>
-        <div class="freshness-sub">Extrapolated at £3,662/sec</div>
+        <div class="freshness-sub">Extrapolated at £4,224/sec</div>
       </div>
     </div>
     <div class="freshness-note">
-      The debt counter uses <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk" target="_blank" rel="noopener">ONS PSND data (series BKQK)</a>, and the debt-to-GDP ratio uses <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/hf6x" target="_blank" rel="noopener">ONS series HF6X</a>; both refresh hourly. The £3,662/sec rate is based on the OBR March 2026 forecast of £115.5bn borrowing in 2026-27; it is an annualized estimate, not actual daily borrowing. Aggregate finance cards show a pro-rated share of that forecast, not ONS year-to-date outturn. OBR annual estimates will need review when the October 2026 forecast is published. All figures are indicative and for illustrative purposes only.
+      The debt counter uses <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/bkqk" target="_blank" rel="noopener">ONS PSND data (series BKQK)</a>, and the debt-to-GDP ratio uses <a href="https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/timeseries/hf6x" target="_blank" rel="noopener">ONS series HF6X</a>; both refresh hourly. The £4,224/sec rate annualizes the October 2026 OBR forecast of £133.2bn borrowing in 2026-27; it is not actual daily borrowing. Spending and borrowing cards are pro-rated forecast estimates, not ONS year-to-date outturn. Receipts and nominal GDP are rounded implied estimates; welfare and pensioner totals remain dated March 2026 references. All figures are indicative and for illustrative purposes only.
     </div>
   </div>
 
@@ -637,16 +637,16 @@
   const FALLBACK_DEBT_AT   = new Date('2026-09-30T00:00:00Z').getTime();
   const FALLBACK_DEBT_GDP  = 94.0;
   const FALLBACK_DEBT_GDP_DATE = 'September 2026';
-  const DEBT_PER_SEC       = 3662;
-  const SPENDING_ANNUAL    = 1421e9;
-  const TAX_ANNUAL         = 1304e9;
-  const INTEREST_ANNUAL    = 111e9;
+  const DEBT_PER_SEC       = 4224;
+  const SPENDING_ANNUAL    = 1449.2e9;
+  const TAX_ANNUAL         = 1316e9;
+  const INTEREST_ANNUAL    = 126.4e9;
   const WELFARE_ANNUAL     = 352.8e9;
   const PENSION_ANNUAL     = 169.2e9;
   const NHS_ANNUAL         = 215.352e9;
   const DEFENCE_ANNUAL     = 62e9;
   const EDUCATION_ANNUAL   = 112e9;
-  const GDP_ANNUAL         = 3164e9;
+  const GDP_ANNUAL         = 3171e9;
   const SEC_IN_YEAR        = (new Date('2027-04-01T00:00:00Z') - FISCAL_YEAR_START) / 1000;
   const POPULATION         = 69483900;
   const WORKING_AGE        = 43500000;
@@ -679,7 +679,7 @@
   // ─────────────────────────────────────────────────────────
   function updateHeroBase() {
     const el = document.getElementById('heroBase');
-    if (el) el.textContent = baseLabel + ' · extrapolated live at £3,662/sec';
+    if (el) el.textContent = baseLabel + ' · extrapolated live at £4,224/sec';
   }
 
   function updateDebtGDPDisplays() {
@@ -806,8 +806,8 @@
     document.getElementById('spendingCard').textContent   = fmtBn(SPENDING_ANNUAL * frac);
     document.getElementById('taxCard').textContent        = fmtBn(TAX_ANNUAL * frac);
     document.getElementById('interestCard').textContent   = fmtBn(INTEREST_ANNUAL * frac);
-    document.getElementById('welfareCard').textContent    = fmtBn(WELFARE_ANNUAL * frac);
-    document.getElementById('pensionCard').textContent    = fmtBn(PENSION_ANNUAL * frac);
+    document.getElementById('welfareCard').textContent    = fmtBn(WELFARE_ANNUAL);
+    document.getElementById('pensionCard').textContent    = fmtBn(PENSION_ANNUAL);
     document.getElementById('nhsCard').textContent        = fmtBn(NHS_ANNUAL * frac);
     document.getElementById('defenceCard').textContent    = fmtBn(DEFENCE_ANNUAL);
     document.getElementById('educationCard').textContent  = fmtBn(EDUCATION_ANNUAL);
@@ -861,16 +861,16 @@
     const intDefX   = (INTEREST_ANNUAL/DEFENCE_ANNUAL).toFixed(1);
     const intTaxPct = (INTEREST_ANNUAL/TAX_ANNUAL*100).toFixed(1);
     const debtGDP   = ONS_DEBT_GDP.toFixed(1);
-    const perSec    = '£3,662';
+    const perSec    = '£4,224';
     const perTax    = '£' + Math.round(debt/TAXPAYERS).toLocaleString('en-GB');
     return [
-      `The 2026-27 borrowing forecast averages <strong>${perSec} per second</strong> — about £219,720 per minute.`,
+      `The 2026-27 borrowing forecast averages <strong>${perSec} per second</strong> — about £253,440 per minute.`,
       `Debt interest payments are <strong>${intDefX}× the size of the entire defence budget</strong> — more is spent on interest than on the armed forces.`,
       `<strong>${intTaxPct}% of every pound raised in tax</strong> goes directly to servicing debt interest before a single public service is funded.`,
       `The latest ONS debt-to-GDP figure is <strong>${debtGDP}% for ${ONS_DEBT_GDP_DATE}</strong>.`,
       `Each taxpayer's notional share of the debt is <strong>${perTax}</strong> — using HMRC's 2026-27 taxpayer projection.`,
       `The 2026-27 borrowing forecast is equivalent to <strong>${((DEBT_PER_SEC*SEC_IN_YEAR)/NHS_ANNUAL*100).toFixed(0)}% of the NHS England revenue limit</strong>.`,
-      `The OBR forecasts <strong>~£111bn in net debt interest</strong> for 2026-27.`,
+      `The October OBR forecast implies <strong>about £126bn in net debt interest</strong> for 2026-27.`, 
       `Real regular pay growth has recently been only ~0.3% after inflation — while the debt interest bill remains one of the largest items of public spending.`,
       `Average UK house prices have risen only modestly in nominal terms in 2025–26; after earlier high inflation, real house prices are still below previous peaks in many regions.`,
     ];
@@ -892,22 +892,22 @@
     const items = [
       {label:'NATIONAL DEBT', val:'£'+(debt/1e9).toFixed(0)+'bn', cls:'up'},
       {label:'ONS DEBT/GDP '+ONS_DEBT_GDP_DATE.toUpperCase(), val:ONS_DEBT_GDP.toFixed(1)+'%', cls:'up'},
-      {label:'2026-27 BORROWING FORECAST', val:'£115.5bn', cls:'up'},
-      {label:'DEBT GROWTH ESTIMATE', val:'£3,662/sec', cls:'up'},
+      {label:'2026-27 BORROWING FORECAST', val:'£133.2bn', cls:'up'},
+      {label:'DEBT GROWTH ESTIMATE', val:'£4,224/sec', cls:'up'},
       {label:'REAL GDP GROWTH 2025', val:'+1.2%', cls:'down'},
-      {label:'NET DEBT INTEREST', val:'£111bn/yr', cls:'up'},
-      {label:'WELFARE SPEND', val:'£352.8bn/yr', cls:'up'},
-      {label:'PENSIONER SPENDING', val:'£169.2bn/yr', cls:'up'},
+      {label:'NET DEBT INTEREST', val:'~£126bn/yr', cls:'up'},
+      {label:'WELFARE REF MAR-26', val:'£352.8bn/yr', cls:'up'},
+      {label:'PENSIONER REF MAR-26', val:'£169.2bn/yr', cls:'up'},
       {label:'NHS REVENUE LIMIT', val:'£215.4bn/yr', cls:'up'},
       {label:'DEFENCE OUTTURN 2025-26', val:'£62bn/yr', cls:'up'},
       {label:'EDUCATION REF 2025-26', val:'~£112bn/yr', cls:'up'},
-      {label:'CURRENT RECEIPTS', val:'£1,304bn/yr', cls:'neutral'},
-      {label:'TOTAL SPENDING', val:'£1,421bn/yr', cls:'up'},
-      {label:'UK GDP 2026-27', val:'£3.164tn', cls:'neutral'},
+      {label:'CURRENT RECEIPTS (IMPLIED)', val:'~£1,316bn/yr', cls:'neutral'},
+      {label:'TOTAL SPENDING', val:'£1,449.2bn/yr', cls:'up'},
+      {label:'UK GDP 2026-27 (IMPLIED)', val:'~£3.17tn', cls:'neutral'},
       {label:'DEBT PER PERSON', val:'£'+Math.round(debt/POPULATION).toLocaleString('en-GB'), cls:'up'},
       {label:'DEBT PER TAXPAYER', val:'£'+Math.round(debt/TAXPAYERS).toLocaleString('en-GB'), cls:'up'},
       {label:'GILTS (% OF DEBT)', val:'~85%', cls:'neutral'},
-      {label:'FISCAL HEADROOM MAR-26', val:'£22bn', cls:'neutral'},
+      {label:'FISCAL HEADROOM OCT-26', val:'£15bn (2029-30); £22bn (2030-31)', cls:'neutral'},
     ];
     const el = document.getElementById('ticker');
     el.innerHTML = [...items,...items].map(d =>
@@ -926,8 +926,8 @@
     62,70,75,79,82,83,84,84,84,83,
     97,95,96,95,94,94,94
   ];
-  // OBR projections 2026–2030 (approx, from March 2026 EFO)
-  const PROJ_DATA = [96,97,96,95];
+  // OBR end-March PSND/GDP forecasts from October 2026 EFO.
+  const PROJ_DATA = [95.5,96.7,97.3,96.7,95.9,95.6];
 
   function drawChart() {
     const canvas = document.getElementById('debtChart');
@@ -1008,7 +1008,7 @@
     });
 
     // Update end label
-    document.getElementById('chartEndLabel').textContent = showProj ? '2030' : '2025';
+    document.getElementById('chartEndLabel').textContent = showProj ? '2031-32' : '2026';
     document.getElementById('projLegend').style.display = showProj ? 'flex' : 'none';
   }
 
@@ -1018,7 +1018,7 @@
     document.getElementById('chartHistBtn').setAttribute('aria-pressed','true');
     document.getElementById('chartProjBtn').classList.remove('active');
     document.getElementById('chartProjBtn').setAttribute('aria-pressed','false');
-    document.getElementById('chartSubtitle').textContent = 'Historical data — ONS PSND ex. Click "+ OBR Projections to 2030" to extend the chart.';
+    document.getElementById('chartSubtitle').textContent = 'Historical data — ONS PSND ex. Click "+ OBR Projections to 2031-32" to extend the chart.';
     drawChart();
   });
   document.getElementById('chartProjBtn').addEventListener('click', () => {
@@ -1027,7 +1027,7 @@
     document.getElementById('chartProjBtn').setAttribute('aria-pressed','true');
     document.getElementById('chartHistBtn').classList.remove('active');
     document.getElementById('chartHistBtn').setAttribute('aria-pressed','false');
-    document.getElementById('chartSubtitle').textContent = 'Historical (ONS) + OBR projections to 2030 — Economic & Fiscal Outlook, March 2026.';
+    document.getElementById('chartSubtitle').textContent = 'Historical (ONS) + OBR end-March projections to 2031-32 — October 2026 EFO. Forecast basis differs from monthly ONS ratio.';
     drawChart();
   });
 
@@ -1077,7 +1077,7 @@
   function getShareText() {
     const debt = currentDebt();
     const sinceLoad = ((Date.now()-PAGE_LOAD_TIME)/1000*DEBT_PER_SEC);
-    return `UK public sector net debt is about £${(debt/1e12).toFixed(3)} trillion. The OBR's March 2026 forecast implies borrowing of about £3,662 per second in 2026-27.\n\nThis is an annualized estimate, not actual daily borrowing.\n\nTrack it live: https://debt.azzbo77.com`;
+    return `UK public sector net debt is about £${(debt/1e12).toFixed(3)} trillion. The OBR's October 2026 forecast implies borrowing of about £4,224 per second in 2026-27.\n\nThis is an annualized estimate, not actual daily borrowing.\n\nTrack it live: https://debt.azzbo77.com`;
   }
   document.getElementById('shareBtn').addEventListener('click', () => {
     document.getElementById('shareText').textContent = getShareText();
